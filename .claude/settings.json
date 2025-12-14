@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "mcp__codex__codex",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

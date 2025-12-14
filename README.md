@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 비개발자도 사용하는 클로드 코드
+지금까지 업무에서 산출물을 만들던 프로세스를 생각해보면
+"기획, 문서 작성, 자료 조사"
+-> "보고서, 프레젠테이션, 시각 자료 제작"
 
-## Getting Started
+이 과정에서 여러가지 툴과 프로그램 (ex: 노션, 엑셀, 피그마, 파워포인트)을 사용하게 됩니다.
 
-First, run the development server:
+다양한 툴과 프로그램들을 사용하는 이유와 목적을 한번 생각해볼까요?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+아이디어, 기획 문서, 참고 자료 등의 **인풋**을 바탕으로
+보고서, 대시보드, 프레젠테이션 같은 **아웃풋**이라는 결과물을 만들어내죠.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+이런 프로그램들은 결국 **코드로 이루어져 있어요.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+이제 "클로드 코드"를 사용하면 그런 프로그램들을 거치지 않고, 우리가 원하는 기능을 직접 만들어서 결과물까지 손쉽게 뽑아낼 수 있습니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 클로드 코드가 뭔데?
+Anthropic에서 만든 CLI 기반의 "코딩 어시스턴트"입니다.
+자연어로 요청하면 혼자 플랜을 짜고, 복잡한 코드를 알아서 작성하고, 파일까지 생성해요.
 
-## Learn More
+### 클로드 코드의 원리
+챗GPT나 클로드 같은 LLM, AI 언어 모델은 본래 "텍스트"를 생성하는 것만 할 수 있는데요. 순수한 언어 모델한테 "코드 작성하고 파일로 만들어줘" 같은 요청을 하면 할 수 없는 일이라고 답변할거에요.
 
-To learn more about Next.js, take a look at the following resources:
+그런데 클로드 코드는 직접 파일을 읽고, 프로젝트를 파악하고 수정도 할 수 있습니다.
+순수한 언어모델이 어떻게 외부의 세상과 소통할 수 있는걸까요?
+대체 이게 어떻게 가능한걸까요?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Tool Use
+비밀은 도구(Tool)에 있습니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![클로드 코드 작동 원리](docs/claude-code-flow.svg)
 
-## Deploy on Vercel
+예를 들어서 "기획서 보고 대시보드 페이지 만들어줘"라고 요청하면
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. 클로드 코드(코딩 어시스턴트)가 나의 요청과 함께, 사용 가능한 도구 목록을 언어 모델에게 보냅니다.
+2. 언어 모델은 "ReadFile: docs/project-plan.md" 라고 응답해요.
+3. 그럼 클로드 코드가 실제로 파일을 읽어서 내용을 언어 모델에게 다시 전달합니다.
+4. 언어 모델은 내용을 보고 "WriteFile: app/dashboard/page.tsx" + 페이지 코드를 응답합니다.
+5. 클로드 코드가 실제로 페이지 파일을 생성합니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+언어모델이 외부 세상과 상호작용할 수 있게 하는 꽤 영리한 방법이죠?
+
+실제로 클로드 코드를 사용하다 보면
+`Read(README.md)`
+`Write(page.tsx)`
+같은 응답들이 보일거에요.
+
+"클로드 코드"에 대한 더 자세한 내용은 [클로드 코드 가이드](!url 필요!)를 참고하시죠.
+
+### 클로드 코드 (심화)
+
+#### DRY: Don't Repeat Yourself
+**반복 작업은 자동화하세요!**
+
+같은 작업을 3번 이상 반복하고 있다면? 자동화할 시간입니다.
+
+**반복 작업 예시:**
+- 매번 같은 구조의 페이지 만들기
+- 항상 비슷한 형식으로 문서 작성하기
+- 같은 패턴으로 코드 리뷰하기
+
+**해결 방법:**
+- **Skills** (`.claude/skills/`) - 반복되는 프롬프트를 템플릿화
+  - 예: "API 문서 작성 스킬", "코드 리뷰 스킬", "기획서 작성 스킬"
+- **Agents** (`.claude/agents/`) - 여러 단계의 복잡한 작업 자동화
+  - 예: "PR 생성 후 코드 리뷰 요청까지" 에이전트
+
+클로드 코드와 친숙해졌을 때 자세히 알아봅시다!

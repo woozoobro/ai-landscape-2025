@@ -1,0 +1,251 @@
+/* ==== VSCode Markdown Preview - Solarized Light Style ==== */
+
+/* 공통 변수 (Solarized Palette) */
+.vscode-body {
+  /* Solarized Colors */
+  --solarized-base03:    #002b36;
+  --solarized-base02:    #073642;
+  --solarized-base01:    #586e75;
+  --solarized-base00:    #657b83;
+  --solarized-base0:     #839496;
+  --solarized-base1:     #93a1a1;
+  --solarized-base2:     #eee8d5;
+  --solarized-base3:     #fdf6e3;
+  --solarized-yellow:    #b58900;
+  --solarized-orange:    #cb4b16;
+  --solarized-red:       #dc322f;
+  --solarized-magenta:   #d33682;
+  --solarized-violet:    #6c71c4;
+  --solarized-blue:      #268bd2;
+  --solarized-cyan:      #2aa198;
+  --solarized-green:     #859900;
+
+  /* Mapping to generic names for reuse */
+  --things-blue: var(--solarized-blue);
+  --things-pink: var(--solarized-magenta);
+  --things-green: var(--solarized-green);
+  --things-yellow: var(--solarized-yellow);
+  --things-orange: var(--solarized-orange);
+  --things-red: var(--solarized-red);
+  --things-purple: var(--solarized-violet);
+
+  --things-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Inter, Ubuntu, sans-serif;
+  --things-font-mono: "JetBrains Mono", "Fira Code", Menlo, SFMono-Regular,
+    Consolas, "Roboto Mono", monospace;
+
+  --things-h1-size: 1.7rem;
+  --things-h2-size: 1.5rem;
+  --things-h3-size: 1.2rem;
+  --things-h4-size: 1.1rem;
+  --things-h5-size: 1rem;
+  --things-h6-size: 0.9rem;
+
+  --things-radius-s: 4px;
+  --things-radius-m: 8px;
+  --things-radius-l: 10px;
+}
+
+/* ===== 라이트 테마 (Solarized Light) ===== */
+.vscode-body.vscode-light {
+  background-color: var(--solarized-base3); /* #fdf6e3 */
+  color: var(--solarized-base00);           /* #657b83 */
+  font-family: var(--things-font-sans);
+  line-height: 1.6;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* ===== 다크 테마 (Solarized Dark) ===== */
+.vscode-body.vscode-dark {
+  background-color: var(--solarized-base03); /* #002b36 */
+  color: var(--solarized-base0);             /* #839496 */
+  font-family: var(--things-font-sans);
+  line-height: 1.6;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* 공통 글꼴 / 기본 */
+.vscode-body p {
+  margin: 0.6rem 0;
+}
+
+/* 헤딩들 */
+.vscode-body h1,
+.vscode-body h2,
+.vscode-body h3,
+.vscode-body h4,
+.vscode-body h5,
+.vscode-body h6 {
+  font-family: var(--things-font-sans);
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+}
+
+/* h1 ~ h6 크기 & 색 */
+.vscode-body h1 {
+  font-size: var(--things-h1-size);
+  color: var(--solarized-blue); /* Solarized header color often uses Blue or Orange */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0.3rem;
+}
+.vscode-body.vscode-dark h1 {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.vscode-body h2 {
+  font-size: var(--things-h2-size);
+  color: var(--solarized-orange);
+}
+.vscode-body h3 {
+  font-size: var(--things-h3-size);
+  color: var(--solarized-yellow);
+}
+.vscode-body h4 {
+  font-size: var(--things-h4-size);
+  color: var(--solarized-green);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.vscode-body h5 {
+  font-size: var(--things-h5-size);
+  color: var(--solarized-red);
+}
+.vscode-body h6 {
+  font-size: var(--things-h6-size);
+  color: var(--solarized-base01);
+}
+
+/* 링크 */
+.vscode-body a {
+  color: var(--solarized-blue);
+  text-decoration: underline;
+}
+.vscode-body a:hover {
+  text-decoration: underline;
+  filter: brightness(0.9);
+}
+
+/* 인라인 코드 */
+.vscode-body code {
+  font-family: var(--things-font-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.3em;
+}
+
+/* 라이트/다크에 따른 코드 배경 */
+.vscode-body.vscode-light code {
+  background-color: var(--solarized-base2); /* #eee8d5 */
+  color: var(--solarized-magenta);
+}
+.vscode-body.vscode-dark code {
+  background-color: var(--solarized-base02); /* #073642 */
+  color: var(--solarized-magenta);
+}
+
+/* 코드 블록 */
+.vscode-body pre {
+  padding: 1rem 1.2rem;
+  border-radius: var(--things-radius-m);
+  overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.vscode-body.vscode-light pre {
+  background-color: var(--solarized-base2); /* #eee8d5 */
+}
+.vscode-body.vscode-dark pre {
+  background-color: var(--solarized-base02); /* #073642 */
+  border-color: var(--solarized-base01);
+}
+.vscode-body pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* 리스트 */
+.vscode-body ul,
+.vscode-body ol {
+  padding-left: 1.4rem;
+}
+.vscode-body li + li {
+  margin-top: 0.1rem;
+}
+
+/* 인용문 */
+.vscode-body blockquote {
+  margin: 1rem 0;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--solarized-base1);
+  font-style: italic;
+  color: var(--solarized-base01);
+}
+
+/* 하이라이트 (mark) */
+.vscode-body mark {
+  background-color: var(--solarized-yellow);
+  color: var(--solarized-base3);
+  padding: 0.05em 0.15em;
+  border-radius: 2px;
+}
+
+/* 이미지 카드 */
+.vscode-body img {
+  max-width: 100%;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+/* 테이블 */
+.vscode-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95em;
+}
+.vscode-body th,
+.vscode-body td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.vscode-body.vscode-light th {
+  background-color: var(--solarized-base2);
+}
+.vscode-body.vscode-dark th {
+  background-color: var(--solarized-base02);
+  border-color: var(--solarized-base01);
+}
+.vscode-body.vscode-dark td {
+  border-color: var(--solarized-base01);
+}
+
+/* 체크리스트 (기본 마크다운 - [ ] / [x]) */
+.vscode-body input[type="checkbox"] {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 30%;
+  vertical-align: middle;
+}
+
+/* 태그 느낌의 링크 (#tag 같은 것) */
+.vscode-body a[href^="#"] {
+  font-size: 0.85em;
+  padding: 0.1em 0.55em;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.vscode-body.vscode-light a[href^="#"] {
+  background-color: var(--solarized-base2);
+  color: var(--solarized-green);
+}
+.vscode-body.vscode-dark a[href^="#"] {
+  background-color: var(--solarized-base02);
+  color: var(--solarized-green);
+}

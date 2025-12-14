@@ -1,0 +1,38 @@
+{
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "markdown.styles": [
+    ".vscode/markdown-preview-things.css"
+  ],
+  // VSCode 사이드바에서 숨길 파일/폴더 목록
+  // 다시 보고 싶다면 해당 항목을 삭제하거나 false로 변경하세요
+  "files.exclude": {
+    "**/.next": true,
+    "**/out": true,
+    "**/node_modules": true,
+    "**/.obsidian": true,
+    "**/.github": true,
+    "global.d.ts": true,
+    "next-env.d.ts": true,
+    "postcss.config.mjs": true,
+    "eslint.config.mjs": true,
+    "components.json": true,
+    "tsconfig.json": true,
+    "tsconfig.tsbuildinfo": true,
+    "package-lock.json": true,
+    "Dockerfile": true,
+    "entrypoint.sh": true,
+    "nginx.conf": true,
+    ".gitignore": true,
+    "next.config.ts": true,
+    "lib": true
+  }
+}

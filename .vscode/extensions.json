@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "pomdtr.excalidraw-editor",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "anthropic.claude-code",
+    "openai.chatgpt",
+    "ms-vscode.vscode-typescript-next",
+    "pkief.material-icon-theme",
+    "rodrigovallades.es7-react-js-snippets",
+    "muhammadsodiqmuhammadrosul.rafcem-react-snippets"
+  ]
+}
