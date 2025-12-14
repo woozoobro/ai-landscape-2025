@@ -32,7 +32,6 @@ ai-landscape-2025/
 - **OpenAI**: ChatGPT 중심 소비자 플랫폼 전략
 - **Google**: Search + Workspace + Cloud 통합 인프라 전략
 
-
 ## 작업 가이드
 
 1. `docs/` 폴더의 markdown 자료를 기반으로 페이지 구현
