@@ -14,51 +14,118 @@ import {
 import * as THREE from "three";
 import type { CameraControls as CameraControlsType } from "@react-three/drei";
 
+// Planet positions for camera targeting
+const PLANET_POSITIONS: Record<string, [number, number, number]> = {
+  Anthropic: [-22, 0, 0],
+  OpenAI: [22, 0, 0],
+  Google: [0, 5, -25],
+};
+
+// Camera positions
+const CAMERA_START = { pos: [0, 80, 180], target: [0, 0, -20] }; // Far away in space
+const CAMERA_DEFAULT = { pos: [0, 30, 55], target: [0, 0, -10] }; // Normal view
+
 // Camera controller component that handles zoom transitions
 function CameraController({
   selectedNode,
   cameraControlsRef,
+  onIntroComplete,
 }: {
   selectedNode: EventNode | null;
   cameraControlsRef: React.RefObject<CameraControlsType | null>;
+  onIntroComplete: () => void;
 }) {
+  const [introPlayed, setIntroPlayed] = useState(false);
+
+  // Intro animation - zoom in from far away
   useEffect(() => {
-    if (!cameraControlsRef.current) return;
+    if (!cameraControlsRef.current || introPlayed) return;
 
     const controls = cameraControlsRef.current;
 
-    if (selectedNode && selectedNode.position) {
-      // Zoom to selected node
-      const [x, y, z] = selectedNode.position;
+    // Start from far away
+    controls.setLookAt(
+      CAMERA_START.pos[0],
+      CAMERA_START.pos[1],
+      CAMERA_START.pos[2],
+      CAMERA_START.target[0],
+      CAMERA_START.target[1],
+      CAMERA_START.target[2],
+      false // No animation - instant
+    );
+
+    // Animate to default view after a short delay
+    const timer = setTimeout(() => {
       controls.setLookAt(
-        x + 2,
-        y + 3,
-        z + 6, // Camera position
-        x,
-        y,
-        z, // Look at target
+        CAMERA_DEFAULT.pos[0],
+        CAMERA_DEFAULT.pos[1],
+        CAMERA_DEFAULT.pos[2],
+        CAMERA_DEFAULT.target[0],
+        CAMERA_DEFAULT.target[1],
+        CAMERA_DEFAULT.target[2],
         true // Animate
       );
+      setIntroPlayed(true);
+
+      // Notify parent that intro is complete (for planet/node reveals)
+      setTimeout(() => {
+        onIntroComplete();
+      }, 1500); // After camera animation completes
+    }, 500); // Small delay before starting
+
+    return () => clearTimeout(timer);
+  }, [cameraControlsRef, introPlayed, onIntroComplete]);
+
+  // Handle node selection (after intro)
+  useEffect(() => {
+    if (!cameraControlsRef.current || !introPlayed) return;
+
+    const controls = cameraControlsRef.current;
+
+    if (selectedNode) {
+      // Zoom to company cluster when node is selected
+      const planetPos = PLANET_POSITIONS[selectedNode.company];
+      if (planetPos) {
+        controls.setLookAt(
+          planetPos[0] + 8,
+          planetPos[1] + 12,
+          planetPos[2] + 20,
+          planetPos[0],
+          planetPos[1],
+          planetPos[2],
+          true
+        );
+      }
     } else {
-      // Reset to default view - overview of all 3 planets
-      controls.setLookAt(0, 25, 45, 0, 0, -5, true);
+      // Reset to default view
+      controls.setLookAt(
+        CAMERA_DEFAULT.pos[0],
+        CAMERA_DEFAULT.pos[1],
+        CAMERA_DEFAULT.pos[2],
+        CAMERA_DEFAULT.target[0],
+        CAMERA_DEFAULT.target[1],
+        CAMERA_DEFAULT.target[2],
+        true
+      );
     }
-  }, [selectedNode, cameraControlsRef]);
+  }, [selectedNode, cameraControlsRef, introPlayed]);
 
   return (
     <CameraControls
       ref={cameraControlsRef}
       makeDefault
-      minDistance={10}
-      maxDistance={100}
+      minDistance={15}
+      maxDistance={120}
       dollySpeed={0.5}
       truckSpeed={0.5}
+      smoothTime={0.8} // Smoother camera movement
     />
   );
 }
 
 export default function Scene() {
   const [selectedNode, setSelectedNode] = useState<EventNode | null>(null);
+  const [introComplete, setIntroComplete] = useState(false);
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
 
   // Find the related event labels for display
@@ -70,19 +137,21 @@ export default function Scene() {
   return (
     <div className="w-full h-screen bg-black relative overflow-hidden">
       <Canvas
-        camera={{ position: [0, 25, 45], fov: 55 }}
+        camera={{ position: [0, 80, 180], fov: 50 }} // Start far away
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false, toneMappingExposure: 1 }}
+        gl={{ antialias: true, alpha: false, toneMappingExposure: 1.2 }}
       >
         <color attach="background" args={["#030308"]} />
         <Suspense fallback={null}>
           <SpaceGraph
             onNodeSelect={setSelectedNode}
             selectedNode={selectedNode}
+            introComplete={introComplete}
           />
           <CameraController
             selectedNode={selectedNode}
             cameraControlsRef={cameraControlsRef}
+            onIntroComplete={() => setIntroComplete(true)}
           />
           <EffectComposer multisampling={0}>
             {/* Core glow - bright parts */}

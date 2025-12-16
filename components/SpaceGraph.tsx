@@ -15,15 +15,18 @@ const COLORS: Record<Company, string> = {
   Google: "#4285f4",
 };
 
-// Planet positions (triangle formation)
+// Planet positions (triangle formation) - spread out more
 const PLANET_POSITIONS: Record<Company, [number, number, number]> = {
-  Anthropic: [-18, 0, 5],
-  OpenAI: [18, 0, 5],
-  Google: [0, 0, -20],
+  Anthropic: [-22, 0, 0],
+  OpenAI: [22, 0, 0],
+  Google: [0, 5, -25],
 };
 
-const PLANET_RADIUS = 3;
-const ORBIT_BASE_RADIUS = 6;
+const PLANET_RADIUS = 2.5;
+const CLUSTER_RADIUS = 12; // Radius of the node cluster around each planet
+
+// Golden angle for Fibonacci sphere distribution
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
 // Seeded random for consistent positions
 function seededRandom(seed: string): number {
@@ -36,69 +39,188 @@ function seededRandom(seed: string): number {
   return (Math.abs(hash) % 1000) / 1000;
 }
 
+// Simple force simulation to prevent overlap
+function simulateForces(
+  positions: Array<{ id: string; pos: [number, number, number]; company: Company }>,
+  iterations: number = 30
+): Map<string, [number, number, number]> {
+  const result = positions.map((p) => ({
+    ...p,
+    pos: [...p.pos] as [number, number, number],
+  }));
+
+  const minDistance = 2.2;
+
+  for (let iter = 0; iter < iterations; iter++) {
+    // Repulsion between nodes
+    for (let i = 0; i < result.length; i++) {
+      for (let j = i + 1; j < result.length; j++) {
+        const dx = result[j].pos[0] - result[i].pos[0];
+        const dy = result[j].pos[1] - result[i].pos[1];
+        const dz = result[j].pos[2] - result[i].pos[2];
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        if (dist < minDistance && dist > 0.01) {
+          const force = ((minDistance - dist) / dist) * 0.3;
+          result[i].pos[0] -= dx * force;
+          result[i].pos[1] -= dy * force;
+          result[i].pos[2] -= dz * force;
+          result[j].pos[0] += dx * force;
+          result[j].pos[1] += dy * force;
+          result[j].pos[2] += dz * force;
+        }
+      }
+    }
+
+    // Attraction to cluster center (but not too close)
+    for (let i = 0; i < result.length; i++) {
+      const planetPos = PLANET_POSITIONS[result[i].company];
+      const dx = result[i].pos[0] - planetPos[0];
+      const dy = result[i].pos[1] - planetPos[1];
+      const dz = result[i].pos[2] - planetPos[2];
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+      // Keep within cluster bounds
+      const maxDist = CLUSTER_RADIUS + 3;
+      const minDist = PLANET_RADIUS + 2;
+
+      if (dist > maxDist) {
+        const scale = 0.1;
+        result[i].pos[0] -= dx * scale;
+        result[i].pos[1] -= dy * scale;
+        result[i].pos[2] -= dz * scale;
+      } else if (dist < minDist) {
+        const scale = 0.1;
+        result[i].pos[0] += dx * scale;
+        result[i].pos[1] += dy * scale;
+        result[i].pos[2] += dz * scale;
+      }
+    }
+  }
+
+  const map = new Map<string, [number, number, number]>();
+  result.forEach((r) => map.set(r.id, r.pos));
+  return map;
+}
+
 interface SpaceGraphProps {
   onNodeSelect: (node: EventNode | null) => void;
   selectedNode: EventNode | null;
+  introComplete: boolean;
 }
 
-// Planet component - large sphere representing each company
-function Planet({ company }: { company: Company }) {
+// Easing function for bounce effect
+function easeOutBack(x: number): number {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+}
+
+// Planet component - large sphere representing each company (center of cluster)
+function Planet({
+  company,
+  revealed,
+  delay,
+}: {
+  company: Company;
+  revealed: boolean;
+  delay: number;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const position = PLANET_POSITIONS[company];
   const color = COLORS[company];
 
+  const [currentScale, setCurrentScale] = useState(0);
+  const [animationProgress, setAnimationProgress] = useState(0);
+  const startTimeRef = useRef<number | null>(null);
+
   useFrame((state) => {
     if (meshRef.current) {
-      // Slow rotation
-      meshRef.current.rotation.y += 0.001;
+      meshRef.current.rotation.y += 0.002;
     }
+
+    if (!groupRef.current) return;
+
+    // Reveal animation with bounce
+    if (revealed) {
+      if (startTimeRef.current === null) {
+        startTimeRef.current = state.clock.elapsedTime + delay;
+      }
+
+      const elapsed = state.clock.elapsedTime - startTimeRef.current;
+      if (elapsed > 0) {
+        const duration = 0.8; // Animation duration in seconds
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutBack(progress);
+        setAnimationProgress(progress);
+        setCurrentScale(easedProgress);
+      }
+    }
+
+    groupRef.current.scale.setScalar(currentScale);
   });
 
+  // Don't render label until animation is mostly complete
+  const showLabel = animationProgress > 0.7;
+
   return (
-    <group position={position}>
-      {/* Planet body */}
+    <group ref={groupRef} position={position}>
+      {/* Planet body - smaller, acts as cluster center */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[PLANET_RADIUS, 64, 64]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.4}
-          roughness={0.6}
-          metalness={0.3}
+          emissiveIntensity={0.5}
+          roughness={0.4}
+          metalness={0.4}
         />
       </mesh>
 
-      {/* Glow effect */}
+      {/* Inner glow */}
       <mesh>
-        <sphereGeometry args={[PLANET_RADIUS * 1.15, 32, 32]} />
+        <sphereGeometry args={[PLANET_RADIUS * 1.2, 32, 32]} />
         <meshBasicMaterial
           color={color}
           transparent
-          opacity={0.1}
+          opacity={0.15}
           side={THREE.BackSide}
         />
       </mesh>
 
-      {/* Planet label */}
-      <Html position={[0, PLANET_RADIUS + 1.5, 0]} center>
-        <div
-          className="text-white text-sm font-bold tracking-widest uppercase pointer-events-none select-none px-3 py-1 rounded-full"
-          style={{
-            backgroundColor: `${color}30`,
-            borderColor: `${color}50`,
-            borderWidth: 1,
-            textShadow: `0 0 10px ${color}`,
-          }}
-        >
-          {company}
-        </div>
-      </Html>
+      {/* Outer glow */}
+      <mesh>
+        <sphereGeometry args={[PLANET_RADIUS * 1.5, 32, 32]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.05}
+          side={THREE.BackSide}
+        />
+      </mesh>
+
+      {/* Planet label - appears after scale animation */}
+      {showLabel && (
+        <Html position={[0, PLANET_RADIUS + 1.2, 0]} center>
+          <div
+            className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
+            style={{
+              backgroundColor: `${color}40`,
+              border: `1px solid ${color}60`,
+              textShadow: `0 0 8px ${color}`,
+            }}
+          >
+            {company}
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
 
-// Satellite component - small sphere representing each event
-function Satellite({
+// Node component - Obsidian-style graph node
+function GraphNode({
   event,
   position,
   onSelect,
@@ -111,37 +233,41 @@ function Satellite({
   selected: boolean;
   revealed: boolean;
 }) {
+  const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const [scale, setScale] = useState(0);
-
-  // Size based on importance
-  const size = 0.25 + event.importance * 0.12;
+  const [currentScale, setCurrentScale] = useState(0);
   const color = COLORS[event.company];
 
-  // Animation offset
-  const timeOffset = useMemo(() => seededRandom(event.id) * 100, [event.id]);
+  // ===========================================
+  // NODE SIZE CONFIGURATION
+  // Adjust these values to change node sizes based on importance (1-5)
+  // ===========================================
+  const NODE_SIZE_CONFIG = {
+    baseSize: 0.35,           // Minimum size for importance 1
+    sizePerImportance: 0.12,  // Additional size per importance level
+    // Result: importance 1 = 0.47, importance 5 = 0.95
+  };
 
-  useFrame((state) => {
-    if (meshRef.current) {
-      // Reveal animation
-      const targetScale = revealed ? 1 : 0;
-      const newScale = THREE.MathUtils.lerp(scale, targetScale, 0.08);
-      setScale(newScale);
-      meshRef.current.scale.setScalar(newScale);
+  const baseSize = NODE_SIZE_CONFIG.baseSize + event.importance * NODE_SIZE_CONFIG.sizePerImportance;
 
-      // Gentle floating
-      meshRef.current.position.y =
-        position[1] + Math.sin(state.clock.elapsedTime * 0.8 + timeOffset) * 0.15;
+  useFrame(() => {
+    if (!groupRef.current || !meshRef.current) return;
 
-      // Scale on hover/select
-      const hoverScale = selected ? 1.5 : hovered ? 1.3 : 1;
-      meshRef.current.scale.multiplyScalar(hoverScale);
-    }
+    // Reveal animation
+    const targetScale = revealed ? 1 : 0;
+    const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.06);
+    setCurrentScale(newScale);
+
+    // Hover/select scale
+    const interactionScale = selected ? 1.4 : hovered ? 1.2 : 1;
+    const finalScale = newScale * interactionScale;
+    groupRef.current.scale.setScalar(finalScale);
   });
 
   return (
-    <group position={[position[0], position[1], position[2]]}>
+    <group ref={groupRef} position={position}>
+      {/* Main node sphere */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => {
@@ -158,22 +284,67 @@ function Satellite({
           onSelect(event);
         }}
       >
-        <sphereGeometry args={[size, 32, 32]} />
+        <sphereGeometry args={[baseSize, 32, 32]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={selected ? 2.5 : hovered ? 1.8 : 1}
-          roughness={0.3}
-          metalness={0.7}
+          emissiveIntensity={selected ? 3 : hovered ? 2 : 0.8}
+          roughness={0.2}
+          metalness={0.8}
         />
       </mesh>
 
-      {/* Hover tooltip */}
+      {/* Glow sphere */}
+      <mesh>
+        <sphereGeometry args={[baseSize * 1.3, 16, 16]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={selected ? 0.3 : hovered ? 0.2 : 0.08}
+          side={THREE.BackSide}
+        />
+      </mesh>
+
+      {/* Always-visible small label */}
+      <Html
+        position={[0, baseSize + 0.8, 0]}
+        center
+        style={{
+          opacity: selected || hovered ? 1 : 0.7,
+          transition: "opacity 0.2s",
+        }}
+      >
+        <div
+          className="pointer-events-none select-none text-center whitespace-nowrap"
+          style={{
+            fontSize: "10px",
+            color: hovered || selected ? "#fff" : "#aaa",
+            textShadow: `0 0 6px ${color}`,
+            maxWidth: "100px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {event.label.length > 15
+            ? event.label.substring(0, 15) + "..."
+            : event.label}
+        </div>
+      </Html>
+
+      {/* Expanded tooltip on hover */}
       {hovered && !selected && (
-        <Html distanceFactor={15} position={[0, size + 0.5, 0]} center>
-          <div className="bg-black/90 text-white px-3 py-2 rounded-lg border border-white/20 text-xs w-44 backdrop-blur-md shadow-xl pointer-events-none select-none">
-            <div className="font-bold text-sm mb-0.5">{event.label}</div>
-            <div className="text-zinc-500 text-[10px]">{event.date}</div>
+        <Html distanceFactor={12} position={[0, baseSize + 2.5, 0]} center>
+          <div
+            className="bg-black/95 text-white px-4 py-3 rounded-xl border text-xs w-52 backdrop-blur-md shadow-2xl pointer-events-none select-none"
+            style={{ borderColor: `${color}50` }}
+          >
+            <div className="font-bold text-sm mb-1" style={{ color }}>
+              {event.label}
+            </div>
+            <div className="text-zinc-400 text-[11px] mb-2">{event.date}</div>
+            <div className="text-zinc-300 text-[10px] line-clamp-2">
+              {event.description}
+            </div>
           </div>
         </Html>
       )}
@@ -181,93 +352,125 @@ function Satellite({
   );
 }
 
-// Calculate satellite position around planet
-function getSatellitePosition(
+// Calculate initial position using Fibonacci sphere distribution
+function getInitialClusterPosition(
   company: Company,
-  month: number,
-  indexInMonth: number,
-  totalInMonth: number
+  index: number,
+  total: number,
+  seed: string
 ): [number, number, number] {
   const planetPos = PLANET_POSITIONS[company];
 
-  // Distribute around the planet based on month (angle) and index (radius)
-  const baseAngle = ((month - 1) / 12) * Math.PI * 2 - Math.PI / 2; // Start from top
-  const angleOffset = (indexInMonth / Math.max(totalInMonth, 1)) * 0.5 - 0.25;
-  const angle = baseAngle + angleOffset;
+  // Fibonacci sphere for even distribution
+  const y = 1 - (index / Math.max(total - 1, 1)) * 2;
+  const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
+  const theta = GOLDEN_ANGLE * index;
 
-  // Vary radius slightly for same-month events
-  const radius = ORBIT_BASE_RADIUS + indexInMonth * 0.8;
-
-  // Slight Y offset for depth
-  const yOffset = (seededRandom(`${company}-${month}-${indexInMonth}`) - 0.5) * 2;
+  // Add some randomness for organic feel
+  const randomOffset = seededRandom(seed);
+  const radius = CLUSTER_RADIUS * (0.5 + randomOffset * 0.5);
 
   return [
-    planetPos[0] + Math.cos(angle) * radius,
-    planetPos[1] + yOffset,
-    planetPos[2] + Math.sin(angle) * radius,
+    planetPos[0] + Math.cos(theta) * radiusAtY * radius,
+    planetPos[1] + y * radius * 0.7, // Flatten vertically
+    planetPos[2] + Math.sin(theta) * radiusAtY * radius,
   ];
 }
 
 export default function SpaceGraph({
   onNodeSelect,
   selectedNode,
+  introComplete,
 }: SpaceGraphProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set());
+  const [planetsRevealed, setPlanetsRevealed] = useState(false);
 
-  // Group events by company and month for positioning
-  const eventsByCompanyMonth = useMemo(() => {
-    const grouped: Record<Company, Record<number, EventNode[]>> = {
-      Anthropic: {},
-      OpenAI: {},
-      Google: {},
+  // Group events by company
+  const eventsByCompany = useMemo(() => {
+    const grouped: Record<Company, EventNode[]> = {
+      Anthropic: [],
+      OpenAI: [],
+      Google: [],
     };
 
     events.forEach((event) => {
-      const month = parseInt(event.date.split("-")[1]);
-      if (!grouped[event.company][month]) {
-        grouped[event.company][month] = [];
-      }
-      grouped[event.company][month].push(event);
+      grouped[event.company].push(event);
+    });
+
+    // Sort by date within each company
+    Object.keys(grouped).forEach((company) => {
+      grouped[company as Company].sort((a, b) => a.date.localeCompare(b.date));
     });
 
     return grouped;
   }, []);
 
-  // Calculate positions for all satellites
-  const satellitesWithPositions = useMemo(() => {
-    const result: Array<{ event: EventNode; position: [number, number, number] }> = [];
+  // Calculate positions with force simulation for cluster layout
+  const nodesWithPositions = useMemo(() => {
+    // First, generate initial positions using Fibonacci sphere
+    const initialPositions: Array<{
+      id: string;
+      pos: [number, number, number];
+      company: Company;
+    }> = [];
 
-    (Object.keys(eventsByCompanyMonth) as Company[]).forEach((company) => {
-      const monthGroups = eventsByCompanyMonth[company];
-      Object.entries(monthGroups).forEach(([monthStr, monthEvents]) => {
-        const month = parseInt(monthStr);
-        monthEvents.forEach((event, index) => {
-          result.push({
-            event,
-            position: getSatellitePosition(
-              company,
-              month,
-              index,
-              monthEvents.length
-            ),
-          });
+    (Object.keys(eventsByCompany) as Company[]).forEach((company) => {
+      const companyEvents = eventsByCompany[company];
+      companyEvents.forEach((event, index) => {
+        initialPositions.push({
+          id: event.id,
+          pos: getInitialClusterPosition(
+            company,
+            index,
+            companyEvents.length,
+            event.id
+          ),
+          company,
         });
       });
     });
 
-    return result;
-  }, [eventsByCompanyMonth]);
+    // Apply force simulation to prevent overlap
+    const simulatedPositions = simulateForces(initialPositions);
 
-  // Staggered reveal animation
-  useEffect(() => {
-    const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
-    sorted.forEach((node, i) => {
-      setTimeout(() => {
-        setRevealed((prev) => new Set([...prev, node.id]));
-      }, i * 50 + 500);
+    // Map back to events
+    const result: Array<{ event: EventNode; position: [number, number, number] }> = [];
+    events.forEach((event) => {
+      const pos = simulatedPositions.get(event.id);
+      if (pos) {
+        result.push({ event, position: pos });
+      }
     });
-  }, []);
+
+    return result;
+  }, [eventsByCompany]);
+
+  // Reveal planets when intro completes
+  useEffect(() => {
+    if (introComplete && !planetsRevealed) {
+      setPlanetsRevealed(true);
+    }
+  }, [introComplete, planetsRevealed]);
+
+  // Staggered node reveal - starts after planets appear
+  useEffect(() => {
+    if (!planetsRevealed) return;
+
+    // Wait for planets to finish appearing (3 planets * 0.3s delay + 0.8s animation)
+    const planetAnimationTime = 1500;
+
+    const timer = setTimeout(() => {
+      const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
+      sorted.forEach((node, i) => {
+        setTimeout(() => {
+          setRevealedNodes((prev) => new Set([...prev, node.id]));
+        }, i * 40); // Faster reveal for nodes
+      });
+    }, planetAnimationTime);
+
+    return () => clearTimeout(timer);
+  }, [planetsRevealed]);
 
   // Very gentle scene rotation
   useFrame(() => {
@@ -299,20 +502,20 @@ export default function SpaceGraph({
       <DustParticles count={200} />
 
       <group ref={groupRef}>
-        {/* Planets */}
-        <Planet company="Anthropic" />
-        <Planet company="OpenAI" />
-        <Planet company="Google" />
+        {/* Planets - cluster centers with staggered reveal */}
+        <Planet company="Anthropic" revealed={planetsRevealed} delay={0} />
+        <Planet company="OpenAI" revealed={planetsRevealed} delay={0.3} />
+        <Planet company="Google" revealed={planetsRevealed} delay={0.6} />
 
-        {/* Satellites */}
-        {satellitesWithPositions.map(({ event, position }) => (
-          <Satellite
+        {/* Graph Nodes - Obsidian style */}
+        {nodesWithPositions.map(({ event, position }) => (
+          <GraphNode
             key={event.id}
             event={event}
             position={position}
             onSelect={onNodeSelect}
             selected={selectedNode?.id === event.id}
-            revealed={revealed.has(event.id)}
+            revealed={revealedNodes.has(event.id)}
           />
         ))}
       </group>
