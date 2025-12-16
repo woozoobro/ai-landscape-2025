@@ -2,6 +2,7 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 
 // Custom shader for soft radial gradient
@@ -19,27 +20,26 @@ const nebulaFragmentShader = `
   varying vec2 vUv;
 
   void main() {
-    // Distance from center (0.5, 0.5)
     vec2 center = vec2(0.5);
     float dist = distance(vUv, center);
 
-    // Soft radial falloff (stronger at center, fades to edges)
-    float alpha = smoothstep(0.5, 0.0, dist) * uOpacity;
+    // Softer falloff
+    float alpha = smoothstep(0.5, 0.1, dist) * uOpacity;
 
-    // Add some noise-like variation
+    // Subtle noise
     float noise = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
-    alpha *= (0.8 + noise * 0.2);
+    alpha *= (0.85 + noise * 0.15);
 
     gl_FragColor = vec4(uColor, alpha);
   }
 `;
 
-// Soft nebula cloud using custom shader
+// Single nebula cloud - uses Billboard to always face camera
 function NebulaCloud({
   position,
   color,
   scale = 1,
-  opacity = 0.15,
+  opacity = 0.1,
 }: {
   position: [number, number, number];
   color: string;
@@ -66,51 +66,108 @@ function NebulaCloud({
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Very slow pulsing
-      const pulse = Math.sin(state.clock.elapsedTime * 0.1) * 0.05 + 1;
-      meshRef.current.scale.setScalar(scale * pulse * 25);
+      const pulse = Math.sin(state.clock.elapsedTime * 0.08) * 0.03 + 1;
+      meshRef.current.scale.setScalar(scale * pulse * 20);
     }
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <primitive object={shaderMaterial} attach="material" />
-    </mesh>
+    <Billboard position={position}>
+      <mesh ref={meshRef}>
+        <planeGeometry args={[1, 1, 1, 1]} />
+        <primitive object={shaderMaterial} attach="material" />
+      </mesh>
+    </Billboard>
   );
 }
 
-// Planet positions for reference
-// Anthropic: [-18, 0, 5]
-// OpenAI: [18, 0, 5]
-// Google: [0, 0, -20]
+// Company nebula region - multiple clouds surrounding the planet area
+function CompanyNebula({
+  center,
+  color,
+}: {
+  center: [number, number, number];
+  color: string;
+}) {
+  const [cx, cy, cz] = center;
+
+  return (
+    <group>
+      {/* Main backdrop - directly behind */}
+      <NebulaCloud
+        position={[cx, cy, cz - 12]}
+        color={color}
+        scale={2.2}
+        opacity={0.12}
+      />
+
+      {/* Upper layer */}
+      <NebulaCloud
+        position={[cx - 3, cy + 8, cz - 8]}
+        color={color}
+        scale={1.5}
+        opacity={0.08}
+      />
+
+      {/* Lower layer */}
+      <NebulaCloud
+        position={[cx + 4, cy - 6, cz - 10]}
+        color={color}
+        scale={1.3}
+        opacity={0.07}
+      />
+
+      {/* Side wisps - left */}
+      <NebulaCloud
+        position={[cx - 10, cy, cz - 5]}
+        color={color}
+        scale={1.0}
+        opacity={0.06}
+      />
+
+      {/* Side wisps - right */}
+      <NebulaCloud
+        position={[cx + 10, cy + 2, cz - 6]}
+        color={color}
+        scale={1.1}
+        opacity={0.06}
+      />
+
+      {/* Front subtle glow */}
+      <NebulaCloud
+        position={[cx, cy - 2, cz + 5]}
+        color={color}
+        scale={0.8}
+        opacity={0.04}
+      />
+    </group>
+  );
+}
+
+// Planet positions
+const PLANET_POSITIONS = {
+  Anthropic: [-18, 0, 5] as [number, number, number],
+  OpenAI: [18, 0, 5] as [number, number, number],
+  Google: [0, 0, -20] as [number, number, number],
+};
+
+const COLORS = {
+  Anthropic: "#d97757",
+  OpenAI: "#10a37f",
+  Google: "#4285f4",
+};
 
 export default function Nebula() {
   return (
     <group>
-      {/* Anthropic region - orange (behind Anthropic planet) */}
-      <NebulaCloud
-        position={[-18, 0, -8]}
-        color="#d97757"
-        scale={1.8}
-        opacity={0.15}
-      />
+      {/* Anthropic region */}
+      <CompanyNebula center={PLANET_POSITIONS.Anthropic} color={COLORS.Anthropic} />
 
-      {/* OpenAI region - green (behind OpenAI planet) */}
-      <NebulaCloud
-        position={[18, 0, -8]}
-        color="#10a37f"
-        scale={1.8}
-        opacity={0.15}
-      />
+      {/* OpenAI region */}
+      <CompanyNebula center={PLANET_POSITIONS.OpenAI} color={COLORS.OpenAI} />
 
-      {/* Google region - blue (behind Google planet) */}
-      <NebulaCloud
-        position={[0, 0, -35]}
-        color="#4285f4"
-        scale={1.8}
-        opacity={0.15}
-      />
+      {/* Google region */}
+      <CompanyNebula center={PLANET_POSITIONS.Google} color={COLORS.Google} />
     </group>
   );
 }
