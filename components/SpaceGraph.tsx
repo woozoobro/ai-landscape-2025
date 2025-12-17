@@ -310,7 +310,7 @@ function GraphNode({
     }
 
     // Bring selected node forward (towards camera) for visibility
-    const targetZ = selected ? position[2] + 8 : position[2];
+    const targetZ = selected ? position[2] + 4 : position[2];
     groupRef.current.position.z = THREE.MathUtils.lerp(
       groupRef.current.position.z,
       targetZ,

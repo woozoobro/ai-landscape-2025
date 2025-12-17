@@ -87,9 +87,9 @@ function CameraController({
       const planetPos = PLANET_POSITIONS[selectedNode.company];
       if (planetPos) {
         controls.setLookAt(
-          planetPos[0] + 8,
-          planetPos[1] + 12,
-          planetPos[2] + 20,
+          planetPos[0] + 10,
+          planetPos[1] + 15,
+          planetPos[2] + 32,
           planetPos[0],
           planetPos[1],
           planetPos[2],
