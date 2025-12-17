@@ -25,6 +25,13 @@ const PLANET_POSITIONS: Record<Company, [number, number, number]> = {
 const PLANET_RADIUS = 2.5;
 const CLUSTER_RADIUS = 12; // Radius of the node cluster around each planet
 
+// Depth compensation - Google is at z=-25, scale up to look equal
+const DEPTH_SCALE: Record<Company, number> = {
+  Anthropic: 1.0,
+  OpenAI: 1.0,
+  Google: 1.35,  // Scale up to compensate for distance
+};
+
 // Golden angle for Fibonacci sphere distribution
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
@@ -75,14 +82,15 @@ function simulateForces(
     // Attraction to cluster center (but not too close)
     for (let i = 0; i < result.length; i++) {
       const planetPos = PLANET_POSITIONS[result[i].company];
+      const depthScale = DEPTH_SCALE[result[i].company];
       const dx = result[i].pos[0] - planetPos[0];
       const dy = result[i].pos[1] - planetPos[1];
       const dz = result[i].pos[2] - planetPos[2];
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-      // Keep within cluster bounds
-      const maxDist = CLUSTER_RADIUS + 3;
-      const minDist = PLANET_RADIUS + 2;
+      // Keep within cluster bounds (scaled for depth compensation)
+      const maxDist = (CLUSTER_RADIUS + 3) * depthScale;
+      const minDist = (PLANET_RADIUS + 2) * depthScale;
 
       if (dist > maxDist) {
         const scale = 0.1;
@@ -130,6 +138,8 @@ function Planet({
   const meshRef = useRef<THREE.Mesh>(null);
   const position = PLANET_POSITIONS[company];
   const color = COLORS[company];
+  const depthScale = DEPTH_SCALE[company];
+  const scaledRadius = PLANET_RADIUS * depthScale;
 
   const [currentScale, setCurrentScale] = useState(0);
   const [animationProgress, setAnimationProgress] = useState(0);
@@ -168,7 +178,7 @@ function Planet({
     <group ref={groupRef} position={position}>
       {/* Planet body - smaller, acts as cluster center */}
       <mesh ref={meshRef}>
-        <sphereGeometry args={[PLANET_RADIUS, 64, 64]} />
+        <sphereGeometry args={[scaledRadius, 64, 64]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
@@ -180,7 +190,7 @@ function Planet({
 
       {/* Inner glow */}
       <mesh>
-        <sphereGeometry args={[PLANET_RADIUS * 1.2, 32, 32]} />
+        <sphereGeometry args={[scaledRadius * 1.2, 32, 32]} />
         <meshBasicMaterial
           color={color}
           transparent
@@ -191,7 +201,7 @@ function Planet({
 
       {/* Outer glow */}
       <mesh>
-        <sphereGeometry args={[PLANET_RADIUS * 1.5, 32, 32]} />
+        <sphereGeometry args={[scaledRadius * 1.5, 32, 32]} />
         <meshBasicMaterial
           color={color}
           transparent
@@ -202,7 +212,7 @@ function Planet({
 
       {/* Planet label - appears after scale animation */}
       {showLabel && (
-        <Html position={[0, PLANET_RADIUS + 1.2, 0]} center>
+        <Html position={[0, scaledRadius + 1.2, 0]} center>
           <div
             className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
             style={{
@@ -238,6 +248,7 @@ function GraphNode({
   const [hovered, setHovered] = useState(false);
   const [currentScale, setCurrentScale] = useState(0);
   const color = COLORS[event.company];
+  const depthScale = DEPTH_SCALE[event.company];
 
   // ===========================================
   // NODE SIZE CONFIGURATION
@@ -249,7 +260,7 @@ function GraphNode({
     // Result: importance 1 = 0.47, importance 5 = 0.95
   };
 
-  const baseSize = NODE_SIZE_CONFIG.baseSize + event.importance * NODE_SIZE_CONFIG.sizePerImportance;
+  const baseSize = (NODE_SIZE_CONFIG.baseSize + event.importance * NODE_SIZE_CONFIG.sizePerImportance) * depthScale;
 
   useFrame(() => {
     if (!groupRef.current || !meshRef.current) return;
@@ -360,6 +371,7 @@ function getInitialClusterPosition(
   seed: string
 ): [number, number, number] {
   const planetPos = PLANET_POSITIONS[company];
+  const depthScale = DEPTH_SCALE[company];
 
   // Fibonacci sphere for even distribution
   const y = 1 - (index / Math.max(total - 1, 1)) * 2;
@@ -368,7 +380,7 @@ function getInitialClusterPosition(
 
   // Add some randomness for organic feel
   const randomOffset = seededRandom(seed);
-  const radius = CLUSTER_RADIUS * (0.5 + randomOffset * 0.5);
+  const radius = CLUSTER_RADIUS * depthScale * (0.5 + randomOffset * 0.5);
 
   return [
     planetPos[0] + Math.cos(theta) * radiusAtY * radius,

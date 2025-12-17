@@ -81,65 +81,102 @@ function NebulaCloud({
   );
 }
 
-// Company nebula region - multiple clouds surrounding the planet area
+// Golden angle for even spherical distribution
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+// Seeded random for consistent positions
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
+}
+
+// Depth compensation multipliers for each company
+// Google is at z=-25 (further back), so we scale it up to look equal
+const DEPTH_COMPENSATION: Record<string, { scale: number; opacity: number; radius: number }> = {
+  Anthropic: { scale: 1.0, opacity: 1.0, radius: 1.0 },
+  OpenAI: { scale: 1.0, opacity: 1.0, radius: 1.0 },
+  Google: { scale: 1.2, opacity: 1.2, radius: 1.3 },  // Slightly bigger for depth, but not too much
+};
+
+// Company nebula region - spherical distribution around the planet cluster
 function CompanyNebula({
   center,
   color,
+  company,
 }: {
   center: [number, number, number];
   color: string;
+  company: string;
 }) {
   const [cx, cy, cz] = center;
+  const compensation = DEPTH_COMPENSATION[company] || { scale: 1, opacity: 1, radius: 1 };
+
+  // Configuration for spherical nebula
+  const NEBULA_CONFIG = {
+    cloudCount: 8,           // Number of clouds per company
+    minRadius: 10 * compensation.radius,   // Inner boundary (scaled for depth)
+    maxRadius: 16 * compensation.radius,   // Outer boundary (scaled for depth)
+    baseScale: 1.2 * compensation.scale,   // Base cloud size (scaled for depth)
+    scaleVariation: 0.6,     // Random size variation
+    baseOpacity: 0.07 * compensation.opacity,  // Base opacity (scaled for depth)
+    opacityVariation: 0.04,  // Random opacity variation
+  };
+
+  // Generate spherical positions using Fibonacci distribution
+  const clouds = useMemo(() => {
+    const result: Array<{
+      position: [number, number, number];
+      scale: number;
+      opacity: number;
+    }> = [];
+
+    for (let i = 0; i < NEBULA_CONFIG.cloudCount; i++) {
+      // Fibonacci sphere distribution
+      const y = 1 - (i / (NEBULA_CONFIG.cloudCount - 1)) * 2; // -1 to 1
+      const radiusAtY = Math.sqrt(1 - y * y);
+      const theta = GOLDEN_ANGLE * i;
+
+      // Random radius within bounds
+      const seed = i * 137.5;
+      const radiusRandom = seededRandom(seed);
+      const radius = NEBULA_CONFIG.minRadius +
+        (NEBULA_CONFIG.maxRadius - NEBULA_CONFIG.minRadius) * radiusRandom;
+
+      // Position in spherical coordinates
+      const x = cx + Math.cos(theta) * radiusAtY * radius;
+      const posY = cy + y * radius * 0.6; // Slightly flattened vertically
+      const z = cz + Math.sin(theta) * radiusAtY * radius;
+
+      // Random scale and opacity for natural variation
+      const scaleRandom = seededRandom(seed + 50);
+      const opacityRandom = seededRandom(seed + 100);
+
+      const scale = NEBULA_CONFIG.baseScale +
+        NEBULA_CONFIG.scaleVariation * scaleRandom;
+      const opacity = NEBULA_CONFIG.baseOpacity +
+        NEBULA_CONFIG.opacityVariation * opacityRandom;
+
+      result.push({
+        position: [x, posY, z] as [number, number, number],
+        scale,
+        opacity,
+      });
+    }
+
+    return result;
+  }, [cx, cy, cz, compensation.radius, compensation.scale, compensation.opacity]);
 
   return (
     <group>
-      {/* Main backdrop - directly behind */}
-      <NebulaCloud
-        position={[cx, cy, cz - 12]}
-        color={color}
-        scale={2.2}
-        opacity={0.12}
-      />
-
-      {/* Upper layer */}
-      <NebulaCloud
-        position={[cx - 3, cy + 8, cz - 8]}
-        color={color}
-        scale={1.5}
-        opacity={0.08}
-      />
-
-      {/* Lower layer */}
-      <NebulaCloud
-        position={[cx + 4, cy - 6, cz - 10]}
-        color={color}
-        scale={1.3}
-        opacity={0.07}
-      />
-
-      {/* Side wisps - left */}
-      <NebulaCloud
-        position={[cx - 10, cy, cz - 5]}
-        color={color}
-        scale={1.0}
-        opacity={0.06}
-      />
-
-      {/* Side wisps - right */}
-      <NebulaCloud
-        position={[cx + 10, cy + 2, cz - 6]}
-        color={color}
-        scale={1.1}
-        opacity={0.06}
-      />
-
-      {/* Front subtle glow */}
-      <NebulaCloud
-        position={[cx, cy - 2, cz + 5]}
-        color={color}
-        scale={0.8}
-        opacity={0.04}
-      />
+      {clouds.map((cloud, i) => (
+        <NebulaCloud
+          key={i}
+          position={cloud.position}
+          color={color}
+          scale={cloud.scale}
+          opacity={cloud.opacity}
+        />
+      ))}
     </group>
   );
 }
@@ -161,13 +198,13 @@ export default function Nebula() {
   return (
     <group>
       {/* Anthropic region */}
-      <CompanyNebula center={PLANET_POSITIONS.Anthropic} color={COLORS.Anthropic} />
+      <CompanyNebula center={PLANET_POSITIONS.Anthropic} color={COLORS.Anthropic} company="Anthropic" />
 
       {/* OpenAI region */}
-      <CompanyNebula center={PLANET_POSITIONS.OpenAI} color={COLORS.OpenAI} />
+      <CompanyNebula center={PLANET_POSITIONS.OpenAI} color={COLORS.OpenAI} company="OpenAI" />
 
       {/* Google region */}
-      <CompanyNebula center={PLANET_POSITIONS.Google} color={COLORS.Google} />
+      <CompanyNebula center={PLANET_POSITIONS.Google} color={COLORS.Google} company="Google" />
     </group>
   );
 }
