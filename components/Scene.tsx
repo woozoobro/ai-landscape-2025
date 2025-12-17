@@ -205,7 +205,7 @@ export default function Scene() {
 
       {/* Detail Overlay */}
       {selectedNode && (
-        <div className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-zinc-900/60 backdrop-blur-xl border-l border-white/10 p-8 z-20 flex flex-col transform transition-transform duration-300">
+        <div className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-50 flex flex-col transform transition-transform duration-300">
           <button
             onClick={() => setSelectedNode(null)}
             className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"

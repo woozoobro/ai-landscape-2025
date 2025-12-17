@@ -151,10 +151,12 @@ function Planet({
   company,
   revealed,
   delay,
+  selectedCompany,
 }: {
   company: Company;
   revealed: boolean;
   delay: number;
+  selectedCompany: Company | null;  // Company of the selected node
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -232,8 +234,8 @@ function Planet({
         />
       </mesh>
 
-      {/* Planet label - appears after scale animation */}
-      {showLabel && (
+      {/* Planet label - shows when no selection OR this is the selected company */}
+      {showLabel && (selectedCompany === null || selectedCompany === company) && (
         <Html position={[0, scaledRadius + 1.2, 0]} center>
           <div
             className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
@@ -258,12 +260,14 @@ function GraphNode({
   onSelect,
   selected,
   revealed,
+  anySelected,
 }: {
   event: EventNode;
   position: [number, number, number];
   onSelect: (e: EventNode) => void;
   selected: boolean;
   revealed: boolean;
+  anySelected: boolean;  // Hide labels when any node is selected (panel is open)
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -371,34 +375,36 @@ function GraphNode({
         />
       </mesh>
 
-      {/* Always-visible small label */}
-      <Html
-        position={[0, baseSize + 0.8, 0]}
-        center
-        style={{
-          opacity: selected || hovered ? 1 : 0.7,
-          transition: "opacity 0.2s",
-        }}
-      >
-        <div
-          className="pointer-events-none select-none text-center whitespace-nowrap"
+      {/* Label - shows when no selection OR this is the selected node */}
+      {currentScale > 0.5 && (!anySelected || selected) && (
+        <Html
+          position={[0, baseSize + 0.8, 0]}
+          center
           style={{
-            fontSize: "10px",
-            color: hovered || selected ? "#fff" : "#aaa",
-            textShadow: `0 0 6px ${color}`,
-            maxWidth: "100px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            opacity: currentScale < 0.9 ? (currentScale - 0.5) * 2.5 : (selected || hovered ? 1 : 0.7),
+            transition: "opacity 0.2s",
           }}
         >
-          {event.label.length > 15
-            ? event.label.substring(0, 15) + "..."
-            : event.label}
-        </div>
-      </Html>
+          <div
+            className="pointer-events-none select-none text-center whitespace-nowrap"
+            style={{
+              fontSize: "10px",
+              color: hovered || selected ? "#fff" : "#aaa",
+              textShadow: `0 0 6px ${color}`,
+              maxWidth: "100px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {event.label.length > 15
+              ? event.label.substring(0, 15) + "..."
+              : event.label}
+          </div>
+        </Html>
+      )}
 
-      {/* Expanded tooltip on hover */}
-      {hovered && !selected && (
+      {/* Expanded tooltip on hover - hidden when panel is open */}
+      {hovered && !selected && !anySelected && (
         <Html distanceFactor={12} position={[0, baseSize + 2.5, 0]} center>
           <div
             className="bg-black/95 text-white px-4 py-3 rounded-xl border text-xs w-52 backdrop-blur-md shadow-2xl pointer-events-none select-none"
@@ -451,8 +457,6 @@ export default function SpaceGraph({
 }: SpaceGraphProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set());
-  const [planetsRevealed, setPlanetsRevealed] = useState(false);
-
   // Group events by company
   const eventsByCompany = useMemo(() => {
     const grouped: Record<Company, EventNode[]> = {
@@ -513,16 +517,9 @@ export default function SpaceGraph({
     return result;
   }, [eventsByCompany]);
 
-  // Reveal planets when intro completes
-  useEffect(() => {
-    if (introComplete && !planetsRevealed) {
-      setPlanetsRevealed(true);
-    }
-  }, [introComplete, planetsRevealed]);
-
   // Staggered node reveal - starts after planets appear
   useEffect(() => {
-    if (!planetsRevealed) return;
+    if (!introComplete) return;
 
     // Wait for planets to finish appearing (3 planets * 0.3s delay + 0.8s animation)
     const planetAnimationTime = 1500;
@@ -537,7 +534,7 @@ export default function SpaceGraph({
     }, planetAnimationTime);
 
     return () => clearTimeout(timer);
-  }, [planetsRevealed]);
+  }, [introComplete]);
 
   // Very gentle scene rotation
   useFrame(() => {
@@ -570,9 +567,9 @@ export default function SpaceGraph({
 
       <group ref={groupRef}>
         {/* Planets - cluster centers with staggered reveal */}
-        <Planet company="Anthropic" revealed={planetsRevealed} delay={0} />
-        <Planet company="OpenAI" revealed={planetsRevealed} delay={0.3} />
-        <Planet company="Google" revealed={planetsRevealed} delay={0.6} />
+        <Planet company="Anthropic" revealed={introComplete} delay={0} selectedCompany={selectedNode?.company ?? null} />
+        <Planet company="OpenAI" revealed={introComplete} delay={0.3} selectedCompany={selectedNode?.company ?? null} />
+        <Planet company="Google" revealed={introComplete} delay={0.6} selectedCompany={selectedNode?.company ?? null} />
 
         {/* Graph Nodes - Obsidian style */}
         {nodesWithPositions.map(({ event, position }) => (
@@ -583,6 +580,7 @@ export default function SpaceGraph({
             onSelect={onNodeSelect}
             selected={selectedNode?.id === event.id}
             revealed={revealedNodes.has(event.id)}
+            anySelected={selectedNode !== null}
           />
         ))}
       </group>
