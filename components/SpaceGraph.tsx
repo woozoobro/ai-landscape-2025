@@ -35,6 +35,28 @@ const DEPTH_SCALE: Record<Company, number> = {
 // Golden angle for Fibonacci sphere distribution
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
+// ===========================================
+// FLOATING ANIMATION CONFIG
+// Subtle up/down bobbing for all nodes
+// ===========================================
+const FLOATING_CONFIG = {
+  amplitude: 0.15,      // Vertical movement range
+  baseSpeed: 0.5,       // Base oscillation speed
+  speedVariation: 0.3,  // Random speed variation per node
+};
+
+// ===========================================
+// PULSE ANIMATION CONFIG
+// Glow pulse for importance 5 nodes only
+// ===========================================
+const PULSE_CONFIG = {
+  speed: 1.2,             // Pulse speed
+  minEmissive: 0.8,       // Minimum emissive intensity
+  maxEmissive: 2.5,       // Maximum emissive intensity
+  minGlowOpacity: 0.08,   // Minimum glow opacity
+  maxGlowOpacity: 0.25,   // Maximum glow opacity
+};
+
 // Seeded random for consistent positions
 function seededRandom(seed: string): number {
   let hash = 0;
@@ -245,10 +267,16 @@ function GraphNode({
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
   const [currentScale, setCurrentScale] = useState(0);
   const color = COLORS[event.company];
   const depthScale = DEPTH_SCALE[event.company];
+
+  // Calculate per-node floating parameters (consistent based on id)
+  const floatSeed = useMemo(() => seededRandom(event.id), [event.id]);
+  const floatSpeed = FLOATING_CONFIG.baseSpeed + floatSeed * FLOATING_CONFIG.speedVariation;
+  const floatOffset = floatSeed * Math.PI * 2; // Phase offset for variety
 
   // ===========================================
   // NODE SIZE CONFIGURATION
@@ -262,7 +290,7 @@ function GraphNode({
 
   const baseSize = (NODE_SIZE_CONFIG.baseSize + event.importance * NODE_SIZE_CONFIG.sizePerImportance) * depthScale;
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!groupRef.current || !meshRef.current) return;
 
     // Reveal animation
@@ -274,6 +302,33 @@ function GraphNode({
     const interactionScale = selected ? 1.4 : hovered ? 1.2 : 1;
     const finalScale = newScale * interactionScale;
     groupRef.current.scale.setScalar(finalScale);
+
+    // Floating animation (only after reveal is mostly complete)
+    if (currentScale > 0.9) {
+      const floatY = Math.sin(state.clock.elapsedTime * floatSpeed + floatOffset) * FLOATING_CONFIG.amplitude;
+      groupRef.current.position.y = position[1] + floatY;
+    }
+
+    // Bring selected node forward (towards camera) for visibility
+    const targetZ = selected ? position[2] + 8 : position[2];
+    groupRef.current.position.z = THREE.MathUtils.lerp(
+      groupRef.current.position.z,
+      targetZ,
+      0.1
+    );
+
+    // Pulse animation for importance 5 nodes
+    if (event.importance === 5 && meshRef.current.material && glowRef.current?.material) {
+      const pulse = (Math.sin(state.clock.elapsedTime * PULSE_CONFIG.speed) + 1) / 2; // 0-1 range
+      const material = meshRef.current.material as THREE.MeshStandardMaterial;
+      const glowMaterial = glowRef.current.material as THREE.MeshBasicMaterial;
+
+      // Pulse emissive intensity (unless hovered/selected which has priority)
+      if (!hovered && !selected) {
+        material.emissiveIntensity = PULSE_CONFIG.minEmissive + pulse * (PULSE_CONFIG.maxEmissive - PULSE_CONFIG.minEmissive);
+        glowMaterial.opacity = PULSE_CONFIG.minGlowOpacity + pulse * (PULSE_CONFIG.maxGlowOpacity - PULSE_CONFIG.minGlowOpacity);
+      }
+    }
   });
 
   return (
@@ -306,7 +361,7 @@ function GraphNode({
       </mesh>
 
       {/* Glow sphere */}
-      <mesh>
+      <mesh ref={glowRef}>
         <sphereGeometry args={[baseSize * 1.3, 16, 16]} />
         <meshBasicMaterial
           color={color}
