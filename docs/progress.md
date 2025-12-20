@@ -92,16 +92,16 @@ interface EventNode {
   id: string;
   label: string;
   company: "Anthropic" | "OpenAI" | "Google";
-  date: string;           // "2025-MM-DD" 형식
+  date: string;           // "2025-MM" 형식
   description: string;
   importance: 1 | 2 | 3 | 4 | 5;
-  connections?: string[]; // 관련 이벤트 ID
 }
 ```
 
-- **Anthropic**: 14개 이벤트
-- **OpenAI**: 13개 이벤트
-- **Google**: 10개 이벤트
+- **Anthropic**: 17개 이벤트
+- **OpenAI**: 14개 이벤트
+- **Google**: 13개 이벤트
+- **총 44개 이벤트**
 
 ---
 

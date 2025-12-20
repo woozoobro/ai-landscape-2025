@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense, useState, useRef, useEffect } from "react";
 import SpaceGraph from "./SpaceGraph";
 import { CameraControls, Loader } from "@react-three/drei";
-import { EventNode, events } from "@/app/data/events";
+import { EventNode } from "@/app/data/events";
 import { X } from "lucide-react";
 import {
   EffectComposer,
@@ -146,11 +146,6 @@ export default function Scene() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Find the related event labels for display
-  const getRelatedEventLabel = (id: string): string => {
-    const event = events.find((e) => e.id === id);
-    return event?.label || id;
-  };
 
   return (
     <div className="w-full h-screen bg-black relative overflow-hidden">
@@ -340,29 +335,6 @@ export default function Scene() {
               </div>
             </div>
 
-            {/* Related Events */}
-            {selectedNode.connections &&
-              selectedNode.connections.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="text-xs uppercase tracking-widest text-zinc-600 mb-3">
-                    Related Events
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedNode.connections.map((id) => (
-                      <button
-                        key={id}
-                        onClick={() => {
-                          const event = events.find((e) => e.id === id);
-                          if (event) setSelectedNode(event);
-                        }}
-                        className="text-xs text-zinc-400 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {getRelatedEventLabel(id)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
           </div>
         </div>
       )}
