@@ -536,12 +536,6 @@ export default function SpaceGraph({
     return () => clearTimeout(timer);
   }, [introComplete]);
 
-  // Very gentle scene rotation
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.0001;
-    }
-  });
 
   return (
     <>
