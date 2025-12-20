@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useState, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useLoader } from "@react-three/fiber";
 import { Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { events, EventNode, Company } from "@/app/data/events";
@@ -13,6 +13,20 @@ const COLORS: Record<Company, string> = {
   Anthropic: "#d97757",
   OpenAI: "#10a37f",
   Google: "#4285f4",
+};
+
+// Company logo paths (PNG for GPU texture rendering)
+const COMPANY_LOGOS: Record<Company, string> = {
+  Anthropic: "/logos/anthropic.png",
+  OpenAI: "/logos/openai.png",
+  Google: "/logos/google.png",
+};
+
+// Logo scale adjustment per company (to make logos visually equal)
+const LOGO_SCALE: Record<Company, number> = {
+  Anthropic: 0.7,
+  OpenAI: 1.3,
+  Google: 1.0,
 };
 
 // Planet positions (triangle formation) - spread out more
@@ -180,6 +194,43 @@ function easeOutBack(x: number): number {
   return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
 }
 
+// Logo Sprite component - GPU-rendered texture
+function LogoSprite({ company, visible }: { company: Company; visible: boolean }) {
+  const texture = useLoader(THREE.TextureLoader, COMPANY_LOGOS[company]);
+  const spriteRef = useRef<THREE.Sprite>(null);
+  const depthScale = DEPTH_SCALE[company];
+
+  // Calculate aspect ratio from texture
+  const aspect = useMemo(() => {
+    if (texture.image) {
+      return texture.image.width / texture.image.height;
+    }
+    return 1;
+  }, [texture]);
+
+  const logoSize = 3.5 * depthScale * LOGO_SCALE[company];
+
+  useFrame(() => {
+    if (spriteRef.current) {
+      // Smooth fade in
+      const targetOpacity = visible ? 1 : 0;
+      const material = spriteRef.current.material as THREE.SpriteMaterial;
+      material.opacity = THREE.MathUtils.lerp(material.opacity, targetOpacity, 0.1);
+    }
+  });
+
+  return (
+    <sprite ref={spriteRef} scale={[logoSize * aspect, logoSize, 1]} position={[0, 0, 0.1]}>
+      <spriteMaterial
+        map={texture}
+        transparent
+        opacity={0}
+        depthTest={false}
+      />
+    </sprite>
+  );
+}
+
 // Planet component - large sphere representing each company (center of cluster)
 function Planet({
   company,
@@ -201,8 +252,8 @@ function Planet({
   const scaleRef = useRef(0);
   const progressRef = useRef(0);
   const startTimeRef = useRef<number | null>(null);
-  const [labelVisible, setLabelVisible] = useState(false);
-  const wasLabelVisibleRef = useRef(false);
+  const [logoVisible, setLogoVisible] = useState(false);
+  const wasLogoVisibleRef = useRef(false);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -225,11 +276,11 @@ function Planet({
         progressRef.current = progress;
         scaleRef.current = easedProgress;
 
-        // Only trigger re-render when crossing label visibility threshold
-        const shouldShowLabel = progress > 0.7;
-        if (shouldShowLabel !== wasLabelVisibleRef.current) {
-          wasLabelVisibleRef.current = shouldShowLabel;
-          setLabelVisible(shouldShowLabel);
+        // Only trigger re-render when crossing logo visibility threshold
+        const shouldShowLogo = progress > 0.7;
+        if (shouldShowLogo !== wasLogoVisibleRef.current) {
+          wasLogoVisibleRef.current = shouldShowLogo;
+          setLogoVisible(shouldShowLogo);
         }
       }
     }
@@ -278,21 +329,8 @@ function Planet({
         />
       </mesh>
 
-      {/* Planet label - render when visible */}
-      {labelVisible && (
-        <Html position={[0, scaledRadius + 1.2, 0]} center zIndexRange={[1000, 0]}>
-          <div
-            className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
-            style={{
-              backgroundColor: `${color}40`,
-              border: `1px solid ${color}60`,
-              textShadow: `0 0 8px ${color}`,
-            }}
-          >
-            {company}
-          </div>
-        </Html>
-      )}
+      {/* Planet logo - GPU rendered sprite */}
+      <LogoSprite company={company} visible={logoVisible} />
     </group>
   );
 }
