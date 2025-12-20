@@ -93,13 +93,18 @@ OpenAI는 '일상의 넓이'를,
   - Bun = 초고속 JavaScript 런타임 (Node.js 대체재)
   - Claude Code가 Bun 위에서 돌아감 → 핵심 인프라 내재화
   - 오픈소스(MIT 라이선스) 유지 약속
-  
 
 - [Claude Code in Slack](https://claude.com/blog/claude-code-and-slack)
   - Slack 채팅에서 바로 코딩 작업 지시 가능
   - "이 버그 고쳐줘" → Claude가 알아서 코드 수정
 
 - MCP(Model Context Protocol)를 재단에 기부 → 업계 오픈 표준화 추진
+
+- [Claude for Chrome 정식 출시](https://www.anthropic.com/news/claude-for-chrome)
+  - 8월 Research Preview → 11월 Max 전용 → **12월 모든 유료 구독자 확대**
+  - Claude Code 통합, 워크플로우 녹화/학습 기능 추가
+  - 예정 기능: Shortcuts(명령 템플릿), Planning Mode(실행 전 계획 확인)
+
 
 > 🗣️ **해외 반응 (Reddit/HN)**
 > - "Bun 오픈소스 유지한다니 다행. 근데 인수 후 '아무것도 안 바뀐다'는 말, 몇 년 지나면 항상 달라짐"
