@@ -37,7 +37,7 @@ const PLANET_POSITIONS: Record<Company, [number, number, number]> = {
 };
 
 const PLANET_RADIUS = 3.0;
-const CLUSTER_RADIUS = 15; // Radius of the node cluster around each planet (increased for spacing)
+const CLUSTER_RADIUS = 20; // Radius of the node cluster around each planet (increased for spacing)
 
 // Depth compensation - Google is at z=-25, scale up to look equal
 const DEPTH_SCALE: Record<Company, number> = {
@@ -158,8 +158,8 @@ function simulateForces(
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
       // Keep within cluster bounds (scaled for depth compensation)
-      const maxDist = (CLUSTER_RADIUS + 4) * depthScale;
-      const minDist = (PLANET_RADIUS + 3.5) * depthScale; // Increased for more distance from planet
+      const maxDist = (CLUSTER_RADIUS + 5) * depthScale;
+      const minDist = (PLANET_RADIUS + 4.5) * depthScale; // Increased for more distance from planet
 
       if (dist > maxDist) {
         const scale = 0.1;
@@ -492,17 +492,15 @@ function GraphNode({
           <div
             className="pointer-events-none select-none text-center whitespace-nowrap"
             style={{
-              fontSize: "10px",
+              fontSize: "14px",
               color: hovered || selected ? "#fff" : "#aaa",
               textShadow: `0 0 6px ${color}`,
-              maxWidth: "100px",
+              maxWidth: "160px",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            {event.label.length > 15
-              ? event.label.substring(0, 15) + "..."
-              : event.label}
+            {event.label}
           </div>
         </Html>
       )}
