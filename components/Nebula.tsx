@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
@@ -50,24 +50,26 @@ function NebulaCloud({
   revealed: boolean;
   delay: number;
 }) {
+  "use no memo";
+
   const meshRef = useRef<THREE.Mesh>(null);
   const startTimeRef = useRef<number | null>(null);
 
-  const shaderMaterial = useMemo(() => {
+  const [shaderMaterial] = useState(() => {
     const colorObj = new THREE.Color(color);
     return new THREE.ShaderMaterial({
       vertexShader: nebulaVertexShader,
       fragmentShader: nebulaFragmentShader,
       uniforms: {
         uColor: { value: colorObj },
-        uOpacity: { value: 0 }, // Start at 0
+        uOpacity: { value: 0 },
       },
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
-  }, [color]);
+  });
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -75,7 +77,7 @@ function NebulaCloud({
     // Ink spreading animation - scale + opacity together
     let scaleMultiplier = 0;
 
-    if (revealed && shaderMaterial) {
+    if (revealed) {
       if (startTimeRef.current === null) {
         startTimeRef.current = state.clock.elapsedTime + delay;
       }
@@ -91,7 +93,8 @@ function NebulaCloud({
         // Scale: 0.3 → 1.0 (ink spreading effect)
         scaleMultiplier = 0.3 + 0.7 * eased;
 
-        // Opacity: fade in
+        // Opacity: fade in (R3F pattern - shader uniforms are mutable by design)
+        // eslint-disable-next-line react-hooks/immutability
         shaderMaterial.uniforms.uOpacity.value = opacity * eased;
       }
     }
@@ -123,9 +126,9 @@ function seededRandom(seed: number): number {
 // Depth compensation multipliers for each company
 // Google is at z=-25 (further back), so we scale it up to look equal
 const DEPTH_COMPENSATION: Record<string, { scale: number; opacity: number; radius: number }> = {
-  Anthropic: { scale: 1.0, opacity: 1.0, radius: 1.0 },
-  OpenAI: { scale: 1.0, opacity: 1.0, radius: 1.0 },
-  Google: { scale: 1.2, opacity: 1.2, radius: 1.3 },  // Slightly bigger for depth, but not too much
+  Anthropic: { scale: 1.0, opacity: 1.0, radius: 1.1 },
+  OpenAI: { scale: 1.0, opacity: 1.0, radius: 1.2 },
+  Google: { scale: 1.2, opacity: 1.2, radius: 1.4 },  // Slightly bigger for depth, but not too much
 };
 
 // Company nebula region - spherical distribution around the planet cluster
@@ -146,15 +149,15 @@ function CompanyNebula({
   const compensation = DEPTH_COMPENSATION[company] || { scale: 1, opacity: 1, radius: 1 };
 
   // Configuration for spherical nebula
-  const NEBULA_CONFIG = {
-    cloudCount: 8,           // Number of clouds per company
-    minRadius: 10 * compensation.radius,   // Inner boundary (scaled for depth)
-    maxRadius: 16 * compensation.radius,   // Outer boundary (scaled for depth)
-    baseScale: 1.2 * compensation.scale,   // Base cloud size (scaled for depth)
-    scaleVariation: 0.6,     // Random size variation
-    baseOpacity: 0.04 * compensation.opacity,  // Base opacity (scaled for depth) - more subtle
-    opacityVariation: 0.025,  // Random opacity variation - reduced
-  };
+  const nebulaConfig = useMemo(() => ({
+    cloudCount: 8,
+    minRadius: 10 * compensation.radius,
+    maxRadius: 16 * compensation.radius,
+    baseScale: 1.2 * compensation.scale,
+    scaleVariation: 0.6,
+    baseOpacity: 0.04 * compensation.opacity,
+    opacityVariation: 0.025,
+  }), [compensation.radius, compensation.scale, compensation.opacity]);
 
   // Generate spherical positions using Fibonacci distribution
   const clouds = useMemo(() => {
@@ -164,17 +167,17 @@ function CompanyNebula({
       opacity: number;
     }> = [];
 
-    for (let i = 0; i < NEBULA_CONFIG.cloudCount; i++) {
+    for (let i = 0; i < nebulaConfig.cloudCount; i++) {
       // Fibonacci sphere distribution
-      const y = 1 - (i / (NEBULA_CONFIG.cloudCount - 1)) * 2; // -1 to 1
+      const y = 1 - (i / (nebulaConfig.cloudCount - 1)) * 2; // -1 to 1
       const radiusAtY = Math.sqrt(1 - y * y);
       const theta = GOLDEN_ANGLE * i;
 
       // Random radius within bounds
       const seed = i * 137.5;
       const radiusRandom = seededRandom(seed);
-      const radius = NEBULA_CONFIG.minRadius +
-        (NEBULA_CONFIG.maxRadius - NEBULA_CONFIG.minRadius) * radiusRandom;
+      const radius = nebulaConfig.minRadius +
+        (nebulaConfig.maxRadius - nebulaConfig.minRadius) * radiusRandom;
 
       // Position in spherical coordinates
       const x = cx + Math.cos(theta) * radiusAtY * radius;
@@ -185,10 +188,10 @@ function CompanyNebula({
       const scaleRandom = seededRandom(seed + 50);
       const opacityRandom = seededRandom(seed + 100);
 
-      const scale = NEBULA_CONFIG.baseScale +
-        NEBULA_CONFIG.scaleVariation * scaleRandom;
-      const opacity = NEBULA_CONFIG.baseOpacity +
-        NEBULA_CONFIG.opacityVariation * opacityRandom;
+      const scale = nebulaConfig.baseScale +
+        nebulaConfig.scaleVariation * scaleRandom;
+      const opacity = nebulaConfig.baseOpacity +
+        nebulaConfig.opacityVariation * opacityRandom;
 
       result.push({
         position: [x, posY, z] as [number, number, number],
@@ -198,7 +201,7 @@ function CompanyNebula({
     }
 
     return result;
-  }, [cx, cy, cz, compensation.radius, compensation.scale, compensation.opacity]);
+  }, [cx, cy, cz, nebulaConfig]);
 
   return (
     <group>
