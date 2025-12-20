@@ -164,9 +164,12 @@ function Planet({
   const depthScale = DEPTH_SCALE[company];
   const scaledRadius = PLANET_RADIUS * depthScale;
 
-  const [currentScale, setCurrentScale] = useState(0);
-  const [animationProgress, setAnimationProgress] = useState(0);
+  // Performance: useRef instead of useState to avoid re-renders every frame
+  const scaleRef = useRef(0);
+  const progressRef = useRef(0);
   const startTimeRef = useRef<number | null>(null);
+  const [labelVisible, setLabelVisible] = useState(false);
+  const wasLabelVisibleRef = useRef(false);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -175,7 +178,7 @@ function Planet({
 
     if (!groupRef.current) return;
 
-    // Reveal animation with bounce
+    // Reveal animation with bounce - use refs to avoid re-renders
     if (revealed) {
       if (startTimeRef.current === null) {
         startTimeRef.current = state.clock.elapsedTime + delay;
@@ -186,16 +189,20 @@ function Planet({
         const duration = 0.8; // Animation duration in seconds
         const progress = Math.min(elapsed / duration, 1);
         const easedProgress = easeOutBack(progress);
-        setAnimationProgress(progress);
-        setCurrentScale(easedProgress);
+        progressRef.current = progress;
+        scaleRef.current = easedProgress;
+
+        // Only trigger re-render when crossing label visibility threshold
+        const shouldShowLabel = progress > 0.7;
+        if (shouldShowLabel !== wasLabelVisibleRef.current) {
+          wasLabelVisibleRef.current = shouldShowLabel;
+          setLabelVisible(shouldShowLabel);
+        }
       }
     }
 
-    groupRef.current.scale.setScalar(currentScale);
+    groupRef.current.scale.setScalar(scaleRef.current);
   });
-
-  // Don't render label until animation is mostly complete
-  const showLabel = animationProgress > 0.7;
 
   return (
     <group ref={groupRef} position={position}>
@@ -233,8 +240,8 @@ function Planet({
         />
       </mesh>
 
-      {/* Planet label */}
-      {showLabel && (
+      {/* Planet label - render when visible */}
+      {labelVisible && (
         <Html position={[0, scaledRadius + 1.2, 0]} center zIndexRange={[1000, 0]}>
           <div
             className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
@@ -272,7 +279,10 @@ function GraphNode({
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const [currentScale, setCurrentScale] = useState(0);
+  // Performance: useRef instead of useState to avoid re-renders every frame
+  const scaleRef = useRef(0);
+  const [labelVisible, setLabelVisible] = useState(false);
+  const wasVisibleRef = useRef(false);
   const color = COLORS[event.company];
   const depthScale = DEPTH_SCALE[event.company];
 
@@ -296,18 +306,17 @@ function GraphNode({
   useFrame((state) => {
     if (!groupRef.current || !meshRef.current) return;
 
-    // Reveal animation
+    // Reveal animation - use ref instead of state to avoid re-renders
     const targetScale = revealed ? 1 : 0;
-    const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.06);
-    setCurrentScale(newScale);
+    scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, targetScale, 0.06);
 
     // Hover/select scale
     const interactionScale = selected ? 1.4 : hovered ? 1.2 : 1;
-    const finalScale = newScale * interactionScale;
+    const finalScale = scaleRef.current * interactionScale;
     groupRef.current.scale.setScalar(finalScale);
 
     // Floating animation (only after reveal is mostly complete)
-    if (currentScale > 0.9) {
+    if (scaleRef.current > 0.9) {
       const floatY = Math.sin(state.clock.elapsedTime * floatSpeed + floatOffset) * FLOATING_CONFIG.amplitude;
       groupRef.current.position.y = position[1] + floatY;
     }
@@ -331,6 +340,13 @@ function GraphNode({
         material.emissiveIntensity = PULSE_CONFIG.minEmissive + pulse * (PULSE_CONFIG.maxEmissive - PULSE_CONFIG.minEmissive);
         glowMaterial.opacity = PULSE_CONFIG.minGlowOpacity + pulse * (PULSE_CONFIG.maxGlowOpacity - PULSE_CONFIG.minGlowOpacity);
       }
+    }
+
+    // Only trigger re-render when crossing label visibility threshold
+    const shouldBeVisible = scaleRef.current > 0.5;
+    if (shouldBeVisible !== wasVisibleRef.current) {
+      wasVisibleRef.current = shouldBeVisible;
+      setLabelVisible(shouldBeVisible);
     }
   });
 
@@ -376,15 +392,15 @@ function GraphNode({
         />
       </mesh>
 
-      {/* Label */}
-      {currentScale > 0.5 && (
+      {/* Label - render when visible, opacity controlled by CSS transition */}
+      {labelVisible && (
         <Html
           position={[0, baseSize + 0.8, 0]}
           center
           zIndexRange={[1000, 0]}
           style={{
-            opacity: currentScale < 0.9 ? (currentScale - 0.5) * 2.5 : (selected || hovered ? 1 : 0.7),
-            transition: "opacity 0.2s",
+            opacity: selected || hovered ? 1 : 0.7,
+            transition: "opacity 0.3s ease-out",
           }}
         >
           <div
