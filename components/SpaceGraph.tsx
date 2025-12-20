@@ -152,12 +152,10 @@ function Planet({
   company,
   revealed,
   delay,
-  selectedCompany,
 }: {
   company: Company;
   revealed: boolean;
   delay: number;
-  selectedCompany: Company | null;  // Company of the selected node
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -235,8 +233,8 @@ function Planet({
         />
       </mesh>
 
-      {/* Planet label - shows when no selection/hover OR this is the selected company */}
-      {showLabel && (selectedCompany === null || selectedCompany === company) && (
+      {/* Planet label */}
+      {showLabel && (
         <Html position={[0, scaledRadius + 1.2, 0]} center zIndexRange={[1000, 0]}>
           <div
             className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
@@ -262,7 +260,6 @@ function GraphNode({
   onHover,
   selected,
   revealed,
-  anySelected,
 }: {
   event: EventNode;
   position: [number, number, number];
@@ -270,7 +267,6 @@ function GraphNode({
   onHover: (e: EventNode | null) => void;
   selected: boolean;
   revealed: boolean;
-  anySelected: boolean;  // Hide labels when any node is selected (panel is open)
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -380,8 +376,8 @@ function GraphNode({
         />
       </mesh>
 
-      {/* Label - shows when no selection OR this is the selected node */}
-      {currentScale > 0.5 && (!anySelected || selected) && (
+      {/* Label */}
+      {currentScale > 0.5 && (
         <Html
           position={[0, baseSize + 0.8, 0]}
           center
@@ -551,9 +547,9 @@ export default function SpaceGraph({
 
       <group ref={groupRef}>
         {/* Planets - cluster centers with staggered reveal */}
-        <Planet company="Anthropic" revealed={introComplete} delay={0} selectedCompany={selectedNode?.company ?? null} />
-        <Planet company="OpenAI" revealed={introComplete} delay={0.3} selectedCompany={selectedNode?.company ?? null} />
-        <Planet company="Google" revealed={introComplete} delay={0.6} selectedCompany={selectedNode?.company ?? null} />
+        <Planet company="Anthropic" revealed={introComplete} delay={0} />
+        <Planet company="OpenAI" revealed={introComplete} delay={0.3} />
+        <Planet company="Google" revealed={introComplete} delay={0.6} />
 
         {/* Graph Nodes - Obsidian style */}
         {nodesWithPositions.map(({ event, position }) => (
@@ -565,7 +561,6 @@ export default function SpaceGraph({
             onHover={onNodeHover}
             selected={selectedNode?.id === event.id}
             revealed={revealedNodes.has(event.id)}
-            anySelected={selectedNode !== null}
           />
         ))}
       </group>
