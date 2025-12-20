@@ -235,9 +235,9 @@ function Planet({
         />
       </mesh>
 
-      {/* Planet label - shows when no selection OR this is the selected company */}
+      {/* Planet label - shows when no selection/hover OR this is the selected company */}
       {showLabel && (selectedCompany === null || selectedCompany === company) && (
-        <Html position={[0, scaledRadius + 1.2, 0]} center>
+        <Html position={[0, scaledRadius + 1.2, 0]} center zIndexRange={[1000, 0]}>
           <div
             className="text-white text-xs font-bold tracking-widest uppercase pointer-events-none select-none px-2 py-0.5 rounded-full whitespace-nowrap"
             style={{
@@ -385,6 +385,7 @@ function GraphNode({
         <Html
           position={[0, baseSize + 0.8, 0]}
           center
+          zIndexRange={[1000, 0]}
           style={{
             opacity: currentScale < 0.9 ? (currentScale - 0.5) * 2.5 : (selected || hovered ? 1 : 0.7),
             transition: "opacity 0.2s",

@@ -199,8 +199,9 @@ export default function Scene() {
       {/* Hover Tooltip - follows mouse */}
       {hoveredNode && !selectedNode && (
         <div
-          className="fixed z-50 pointer-events-none"
+          className="fixed pointer-events-none"
           style={{
+            zIndex: 99999,
             left: mousePos.x + 16,
             top: mousePos.y + 16,
             transform: mousePos.x > window.innerWidth - 280 ? "translateX(-100%)" : undefined,
