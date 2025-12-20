@@ -16,9 +16,9 @@ import type { CameraControls as CameraControlsType } from "@react-three/drei";
 
 // Planet positions for camera targeting
 const PLANET_POSITIONS: Record<string, [number, number, number]> = {
-  Anthropic: [-22, 0, 0],
-  OpenAI: [22, 0, 0],
-  Google: [0, 5, -25],
+  Anthropic: [-28, 0, 0],
+  OpenAI: [28, 0, 0],
+  Google: [0, 5, -32],
 };
 
 // Camera positions

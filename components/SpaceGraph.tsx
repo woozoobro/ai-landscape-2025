@@ -31,13 +31,13 @@ const LOGO_SCALE: Record<Company, number> = {
 
 // Planet positions (triangle formation) - spread out more
 const PLANET_POSITIONS: Record<Company, [number, number, number]> = {
-  Anthropic: [-22, 0, 0],
-  OpenAI: [22, 0, 0],
-  Google: [0, 5, -25],
+  Anthropic: [-28, 0, 0],
+  OpenAI: [28, 0, 0],
+  Google: [0, 5, -32],
 };
 
-const PLANET_RADIUS = 2.5;
-const CLUSTER_RADIUS = 12; // Radius of the node cluster around each planet
+const PLANET_RADIUS = 3.0;
+const CLUSTER_RADIUS = 15; // Radius of the node cluster around each planet (increased for spacing)
 
 // Depth compensation - Google is at z=-25, scale up to look equal
 const DEPTH_SCALE: Record<Company, number> = {
@@ -125,7 +125,7 @@ function simulateForces(
     pos: [...p.pos] as [number, number, number],
   }));
 
-  const minDistance = 2.2;
+  const minDistance = 2.8; // Increased for more spacing between nodes
 
   for (let iter = 0; iter < iterations; iter++) {
     // Repulsion between nodes
@@ -158,8 +158,8 @@ function simulateForces(
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
       // Keep within cluster bounds (scaled for depth compensation)
-      const maxDist = (CLUSTER_RADIUS + 3) * depthScale;
-      const minDist = (PLANET_RADIUS + 2) * depthScale;
+      const maxDist = (CLUSTER_RADIUS + 4) * depthScale;
+      const minDist = (PLANET_RADIUS + 3.5) * depthScale; // Increased for more distance from planet
 
       if (dist > maxDist) {
         const scale = 0.1;
@@ -372,9 +372,9 @@ function GraphNode({
   // Adjust these values to change node sizes based on importance (1-5)
   // ===========================================
   const NODE_SIZE_CONFIG = {
-    baseSize: 0.35,           // Minimum size for importance 1
-    sizePerImportance: 0.12,  // Additional size per importance level
-    // Result: importance 1 = 0.47, importance 5 = 0.95
+    baseSize: 0.18,           // Minimum size for importance 1 (increased)
+    sizePerImportance: 0.20,  // Additional size per importance level (increased)
+    // Result: importance 1 = 0.57, importance 5 = 1.17
   };
 
   const baseSize = (NODE_SIZE_CONFIG.baseSize + event.importance * NODE_SIZE_CONFIG.sizePerImportance) * depthScale;
