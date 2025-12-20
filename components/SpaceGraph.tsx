@@ -542,7 +542,7 @@ export default function SpaceGraph({
         fade
         speed={0.3}
       />
-      <Nebula />
+      <Nebula introComplete={introComplete} />
       <DustParticles count={200} />
 
       <group ref={groupRef}>

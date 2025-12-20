@@ -40,13 +40,18 @@ function NebulaCloud({
   color,
   scale = 1,
   opacity = 0.1,
+  revealed,
+  delay,
 }: {
   position: [number, number, number];
   color: string;
   scale?: number;
   opacity?: number;
+  revealed: boolean;
+  delay: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const shaderMaterial = useMemo(() => {
     const colorObj = new THREE.Color(color);
@@ -55,20 +60,45 @@ function NebulaCloud({
       fragmentShader: nebulaFragmentShader,
       uniforms: {
         uColor: { value: colorObj },
-        uOpacity: { value: opacity },
+        uOpacity: { value: 0 }, // Start at 0
       },
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
-  }, [color, opacity]);
+  }, [color]);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      const pulse = Math.sin(state.clock.elapsedTime * 0.08) * 0.03 + 1;
-      meshRef.current.scale.setScalar(scale * pulse * 20);
+    if (!meshRef.current) return;
+
+    // Ink spreading animation - scale + opacity together
+    let scaleMultiplier = 0;
+
+    if (revealed && shaderMaterial) {
+      if (startTimeRef.current === null) {
+        startTimeRef.current = state.clock.elapsedTime + delay;
+      }
+
+      const elapsed = state.clock.elapsedTime - startTimeRef.current;
+      if (elapsed > 0) {
+        const duration = 2.0; // Slower, more elegant fade
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Smooth ease-out for both scale and opacity
+        const eased = 1 - Math.pow(1 - progress, 4); // Quartic ease-out
+
+        // Scale: 0.3 → 1.0 (ink spreading effect)
+        scaleMultiplier = 0.3 + 0.7 * eased;
+
+        // Opacity: fade in
+        shaderMaterial.uniforms.uOpacity.value = opacity * eased;
+      }
     }
+
+    // Apply scale with pulse animation (only after reveal starts)
+    const pulse = Math.sin(state.clock.elapsedTime * 0.08) * 0.03 + 1;
+    meshRef.current.scale.setScalar(scale * pulse * 20 * scaleMultiplier);
   });
 
   return (
@@ -103,10 +133,14 @@ function CompanyNebula({
   center,
   color,
   company,
+  revealed,
+  delay,
 }: {
   center: [number, number, number];
   color: string;
   company: string;
+  revealed: boolean;
+  delay: number;
 }) {
   const [cx, cy, cz] = center;
   const compensation = DEPTH_COMPENSATION[company] || { scale: 1, opacity: 1, radius: 1 };
@@ -118,8 +152,8 @@ function CompanyNebula({
     maxRadius: 16 * compensation.radius,   // Outer boundary (scaled for depth)
     baseScale: 1.2 * compensation.scale,   // Base cloud size (scaled for depth)
     scaleVariation: 0.6,     // Random size variation
-    baseOpacity: 0.07 * compensation.opacity,  // Base opacity (scaled for depth)
-    opacityVariation: 0.04,  // Random opacity variation
+    baseOpacity: 0.04 * compensation.opacity,  // Base opacity (scaled for depth) - more subtle
+    opacityVariation: 0.025,  // Random opacity variation - reduced
   };
 
   // Generate spherical positions using Fibonacci distribution
@@ -175,6 +209,8 @@ function CompanyNebula({
           color={color}
           scale={cloud.scale}
           opacity={cloud.opacity}
+          revealed={revealed}
+          delay={delay}
         />
       ))}
     </group>
@@ -194,17 +230,35 @@ const COLORS = {
   Google: "#4285f4",
 };
 
-export default function Nebula() {
+export default function Nebula({ introComplete }: { introComplete: boolean }) {
   return (
     <group>
       {/* Anthropic region */}
-      <CompanyNebula center={PLANET_POSITIONS.Anthropic} color={COLORS.Anthropic} company="Anthropic" />
+      <CompanyNebula
+        center={PLANET_POSITIONS.Anthropic}
+        color={COLORS.Anthropic}
+        company="Anthropic"
+        revealed={introComplete}
+        delay={0}
+      />
 
       {/* OpenAI region */}
-      <CompanyNebula center={PLANET_POSITIONS.OpenAI} color={COLORS.OpenAI} company="OpenAI" />
+      <CompanyNebula
+        center={PLANET_POSITIONS.OpenAI}
+        color={COLORS.OpenAI}
+        company="OpenAI"
+        revealed={introComplete}
+        delay={0.3}
+      />
 
       {/* Google region */}
-      <CompanyNebula center={PLANET_POSITIONS.Google} color={COLORS.Google} company="Google" />
+      <CompanyNebula
+        center={PLANET_POSITIONS.Google}
+        color={COLORS.Google}
+        company="Google"
+        revealed={introComplete}
+        delay={0.6}
+      />
     </group>
   );
 }
