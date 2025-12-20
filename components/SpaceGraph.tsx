@@ -135,6 +135,7 @@ function simulateForces(
 
 interface SpaceGraphProps {
   onNodeSelect: (node: EventNode | null) => void;
+  onNodeHover: (node: EventNode | null) => void;
   selectedNode: EventNode | null;
   introComplete: boolean;
 }
@@ -258,6 +259,7 @@ function GraphNode({
   event,
   position,
   onSelect,
+  onHover,
   selected,
   revealed,
   anySelected,
@@ -265,6 +267,7 @@ function GraphNode({
   event: EventNode;
   position: [number, number, number];
   onSelect: (e: EventNode) => void;
+  onHover: (e: EventNode | null) => void;
   selected: boolean;
   revealed: boolean;
   anySelected: boolean;  // Hide labels when any node is selected (panel is open)
@@ -344,10 +347,12 @@ function GraphNode({
           e.stopPropagation();
           document.body.style.cursor = "pointer";
           setHovered(true);
+          onHover(event);
         }}
         onPointerOut={() => {
           document.body.style.cursor = "auto";
           setHovered(false);
+          onHover(null);
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -403,23 +408,6 @@ function GraphNode({
         </Html>
       )}
 
-      {/* Expanded tooltip on hover - hidden when panel is open */}
-      {hovered && !selected && !anySelected && (
-        <Html distanceFactor={12} position={[0, baseSize + 2.5, 0]} center>
-          <div
-            className="bg-black/95 text-white px-4 py-3 rounded-xl border text-xs w-52 backdrop-blur-md shadow-2xl pointer-events-none select-none"
-            style={{ borderColor: `${color}50` }}
-          >
-            <div className="font-bold text-sm mb-1" style={{ color }}>
-              {event.label}
-            </div>
-            <div className="text-zinc-400 text-[11px] mb-2">{event.date}</div>
-            <div className="text-zinc-300 text-[10px] line-clamp-2">
-              {event.description}
-            </div>
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
@@ -452,6 +440,7 @@ function getInitialClusterPosition(
 
 export default function SpaceGraph({
   onNodeSelect,
+  onNodeHover,
   selectedNode,
   introComplete,
 }: SpaceGraphProps) {
@@ -572,6 +561,7 @@ export default function SpaceGraph({
             event={event}
             position={position}
             onSelect={onNodeSelect}
+            onHover={onNodeHover}
             selected={selectedNode?.id === event.id}
             revealed={revealedNodes.has(event.id)}
             anySelected={selectedNode !== null}

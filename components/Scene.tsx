@@ -123,10 +123,28 @@ function CameraController({
   );
 }
 
+// Color palette for tooltips
+const COLORS: Record<string, string> = {
+  Anthropic: "#d97757",
+  OpenAI: "#10a37f",
+  Google: "#4285f4",
+};
+
 export default function Scene() {
   const [selectedNode, setSelectedNode] = useState<EventNode | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<EventNode | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [introComplete, setIntroComplete] = useState(false);
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
+
+  // Track mouse position for tooltip
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   // Find the related event labels for display
   const getRelatedEventLabel = (id: string): string => {
@@ -145,6 +163,7 @@ export default function Scene() {
         <Suspense fallback={null}>
           <SpaceGraph
             onNodeSelect={setSelectedNode}
+            onNodeHover={setHoveredNode}
             selectedNode={selectedNode}
             introComplete={introComplete}
           />
@@ -176,6 +195,65 @@ export default function Scene() {
         </Suspense>
       </Canvas>
       <Loader />
+
+      {/* Hover Tooltip - follows mouse */}
+      {hoveredNode && !selectedNode && (
+        <div
+          className="fixed z-50 pointer-events-none"
+          style={{
+            left: mousePos.x + 16,
+            top: mousePos.y + 16,
+            transform: mousePos.x > window.innerWidth - 280 ? "translateX(-100%)" : undefined,
+          }}
+        >
+          <div
+            className="bg-zinc-900/95 backdrop-blur-xl rounded-xl border px-5 py-4 shadow-2xl w-64"
+            style={{
+              borderColor: `${COLORS[hoveredNode.company]}40`,
+              boxShadow: `0 0 30px ${COLORS[hoveredNode.company]}20`,
+            }}
+          >
+            {/* Company badge */}
+            <div
+              className="text-[10px] font-bold tracking-widest uppercase mb-2"
+              style={{ color: COLORS[hoveredNode.company] }}
+            >
+              {hoveredNode.company}
+            </div>
+
+            {/* Title */}
+            <h3 className="text-white font-bold text-base leading-tight mb-1">
+              {hoveredNode.label}
+            </h3>
+
+            {/* Date */}
+            <div className="text-zinc-500 text-xs font-mono mb-3">
+              {hoveredNode.date}
+            </div>
+
+            {/* Description */}
+            <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3">
+              {hoveredNode.description}
+            </p>
+
+            {/* Importance dots */}
+            <div className="flex gap-1 mt-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    backgroundColor:
+                      i <= hoveredNode.importance
+                        ? COLORS[hoveredNode.company]
+                        : "#3f3f46",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Title Overlay */}
       <div className="absolute top-8 left-8 text-white pointer-events-none select-none z-10">
