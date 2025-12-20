@@ -251,32 +251,6 @@ export default function Scene() {
         </div>
       )}
 
-      {/* Title Overlay */}
-      <div className="absolute top-8 left-8 text-white pointer-events-none select-none z-10">
-        <h1 className="text-4xl font-bold tracking-tighter bg-gradient-to-r from-orange-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
-          AI LANDSCAPE
-        </h1>
-        <p className="text-zinc-500 font-mono text-sm mt-2 tracking-widest">
-          2025 RETROSPECTIVE
-        </p>
-      </div>
-
-      {/* Company Legend */}
-      <div className="absolute bottom-8 left-8 flex gap-6 z-10 pointer-events-none select-none">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500 rounded-full shadow-[0_0_8px_#d97757]" />
-          <span className="text-xs text-zinc-500 font-mono">Anthropic</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-500 rounded-full shadow-[0_0_8px_#10a37f]" />
-          <span className="text-xs text-zinc-500 font-mono">OpenAI</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_8px_#4285f4]" />
-          <span className="text-xs text-zinc-500 font-mono">Google</span>
-        </div>
-      </div>
-
       {/* Detail Overlay */}
       {selectedNode && (
         <div className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-[2000] flex flex-col transform transition-transform duration-300">
