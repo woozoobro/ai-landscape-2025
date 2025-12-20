@@ -57,6 +57,39 @@ const PULSE_CONFIG = {
   maxGlowOpacity: 0.25,   // Maximum glow opacity
 };
 
+// ===========================================
+// TOON SHADING GRADIENT TEXTURE
+// Creates a 3-step gradient for cel-shading effect
+// ===========================================
+function createToonGradientTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 4;
+  canvas.height = 1;
+  const ctx = canvas.getContext('2d')!;
+
+  // 3-step gradient: dark | mid | mid | bright
+  ctx.fillStyle = '#444';
+  ctx.fillRect(0, 0, 1, 1);
+  ctx.fillStyle = '#999';
+  ctx.fillRect(1, 0, 2, 1);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(3, 0, 1, 1);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.NearestFilter;
+  texture.magFilter = THREE.NearestFilter;
+  return texture;
+}
+
+// Singleton gradient texture (created once, shared by all materials)
+let toonGradientTexture: THREE.CanvasTexture | null = null;
+function getToonGradientTexture(): THREE.CanvasTexture {
+  if (!toonGradientTexture) {
+    toonGradientTexture = createToonGradientTexture();
+  }
+  return toonGradientTexture;
+}
+
 // Seeded random for consistent positions
 function seededRandom(seed: string): number {
   let hash = 0;
@@ -206,16 +239,21 @@ function Planet({
 
   return (
     <group ref={groupRef} position={position}>
-      {/* Planet body - smaller, acts as cluster center */}
+      {/* Planet body - smaller, acts as cluster center (Toon shading) */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[scaledRadius, 64, 64]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.5}
-          roughness={0.4}
-          metalness={0.4}
+          emissiveIntensity={0.8}
+          gradientMap={getToonGradientTexture()}
         />
+      </mesh>
+
+      {/* Toon outline - bright white-ish for visibility */}
+      <mesh scale={1.06}>
+        <sphereGeometry args={[scaledRadius, 32, 32]} />
+        <meshBasicMaterial color="#ffffff" side={THREE.BackSide} transparent opacity={0.8} />
       </mesh>
 
       {/* Inner glow */}
@@ -372,12 +410,22 @@ function GraphNode({
         }}
       >
         <sphereGeometry args={[baseSize, 32, 32]} />
-        <meshStandardMaterial
+        <meshToonMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={selected ? 3 : hovered ? 2 : 0.8}
-          roughness={0.2}
-          metalness={0.8}
+          emissiveIntensity={selected ? 3 : hovered ? 2.2 : 1.0}
+          gradientMap={getToonGradientTexture()}
+        />
+      </mesh>
+
+      {/* Toon outline - bright white for visibility */}
+      <mesh scale={1.18}>
+        <sphereGeometry args={[baseSize, 16, 16]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          side={THREE.BackSide}
+          transparent
+          opacity={0.7}
         />
       </mesh>
 
