@@ -170,6 +170,12 @@ OpenAI는 '일상의 넓이'를,
 ### 25.12월
 - [GPT-5.2](https://openai.com/index/introducing-gpt-5-2/)
 
+- [Codex Skills 도입](https://developers.openai.com/codex/skills/)
+  - Anthropic의 Skills 개념을 Codex CLI와 ChatGPT에 채택
+  - `SKILL.md` 마크다운 파일로 에이전트에게 "전문 스킬" 장착
+  - `~/.codex/skills` 폴더에 저장, `codex --enable skills`로 활성화
+  - Anthropic이 만든 오픈 표준이 업계 표준으로 확산되는 신호
+
 - [Disney x Sora 파트너십](https://openai.com/index/disney-sora-agreement/)
 
 
