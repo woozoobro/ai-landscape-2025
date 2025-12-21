@@ -15,9 +15,6 @@ import {
 import * as THREE from "three";
 import type { CameraControls as CameraControlsType } from "@react-three/drei";
 
-// Panel width for viewport offset calculation
-const PANEL_WIDTH = 450;
-
 // Planet positions for camera targeting
 const PLANET_POSITIONS: Record<string, [number, number, number]> = {
   Anthropic: [-30, 0, 1],
@@ -44,10 +41,10 @@ function CameraController({
   const currentOffsetRef = useRef(0);
   const targetOffsetRef = useRef(0);
 
-  // Update target offset when selection changes
+  // Update target offset when selection changes (50% panel = size.width/4 offset)
   useEffect(() => {
-    targetOffsetRef.current = selectedNode ? PANEL_WIDTH / 2 : 0;
-  }, [selectedNode]);
+    targetOffsetRef.current = selectedNode ? size.width / 4 : 0;
+  }, [selectedNode, size.width]);
 
   // Animate viewport offset smoothly
   useFrame(() => {
@@ -213,18 +210,37 @@ export default function Scene() {
     sortedEvents: [],
   });
 
-  // Handle node selection
+  // Handle node selection - auto-enter Presentation Mode
   const handleNodeSelect = useCallback((node: EventNode | null) => {
+    if (!node) {
+      setSelectedNode(null);
+      return;
+    }
+
     setSelectedNode(node);
 
-    // Sync presentation index when clicking a node during presentation mode
-    if (presentation.active && node) {
+    // Presentation Mode가 꺼져있거나 다른 회사면 → 새로 진입
+    if (!presentation.active || presentation.company !== node.company) {
+      const sortedEvents = events
+        .filter((e) => e.company === node.company)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      const nodeIndex = sortedEvents.findIndex(e => e.id === node.id);
+
+      setPresentation({
+        active: true,
+        company: node.company,
+        currentIndex: nodeIndex !== -1 ? nodeIndex : 0,
+        sortedEvents,
+      });
+    } else {
+      // 같은 회사 내에서 노드 클릭 → 인덱스만 업데이트
       const nodeIndex = presentation.sortedEvents.findIndex(e => e.id === node.id);
-      if (nodeIndex !== -1 && nodeIndex !== presentation.currentIndex) {
+      if (nodeIndex !== -1) {
         setPresentation(prev => ({ ...prev, currentIndex: nodeIndex }));
       }
     }
-  }, [presentation.active, presentation.sortedEvents, presentation.currentIndex]);
+  }, [presentation.active, presentation.company, presentation.sortedEvents]);
 
   // Enter Presentation Mode for a company
   const enterPresentationMode = useCallback((company: Company) => {
@@ -430,16 +446,23 @@ export default function Scene() {
         </div>
       )}
 
-      {/* Detail Overlay */}
-      {selectedNode && (
-        <div className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-[2000] flex flex-col transform transition-transform duration-300">
-          <button
-            onClick={() => handleNodeSelect(null)}
-            className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <X className="w-6 h-6 text-zinc-400" />
-          </button>
+      {/* Detail Overlay - Slide animation */}
+      <div
+        className={`absolute top-0 right-0 h-full w-full md:w-1/2 bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-2000 flex flex-col transition-transform duration-2400 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          selectedNode ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <button
+          onClick={() => {
+            handleNodeSelect(null);
+            exitPresentationMode();
+          }}
+          className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
+        >
+          <X className="w-6 h-6 text-zinc-400" />
+        </button>
 
+        {selectedNode && (
           <div className="mt-20">
             <span
               className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-4 border border-white/10
@@ -489,8 +512,8 @@ export default function Scene() {
             </div>
 
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Presentation Mode Timeline Bar */}
       {presentation.company && (

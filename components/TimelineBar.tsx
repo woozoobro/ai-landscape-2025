@@ -34,7 +34,7 @@ export default function TimelineBar({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[1000] transition-all duration-500 ease-out ${
+      className={`fixed bottom-0 left-0 right-1/2 z-[1000] transition-all duration-500 ease-out ${
         visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
     >
