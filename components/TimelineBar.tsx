@@ -34,15 +34,12 @@ export default function TimelineBar({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-1/2 z-[1000] transition-all duration-500 ease-out ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+      className={`fixed bottom-0 left-0 right-1/2 z-1000 transition-transform duration-3000 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none" />
-
       {/* Content */}
-      <div className="relative px-8 py-6">
+      <div className="px-8 py-6">
         {/* Progress info */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

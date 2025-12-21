@@ -515,16 +515,14 @@ export default function Scene() {
         )}
       </div>
 
-      {/* Presentation Mode Timeline Bar */}
-      {presentation.company && (
-        <TimelineBar
-          events={presentation.sortedEvents}
-          currentIndex={presentation.currentIndex}
-          company={presentation.company}
-          visible={presentation.active}
-          onEventClick={goToEvent}
-        />
-      )}
+      {/* Presentation Mode Timeline Bar - 항상 렌더링, visible로 애니메이션 */}
+      <TimelineBar
+        events={presentation.sortedEvents}
+        currentIndex={presentation.currentIndex}
+        company={presentation.company || "Anthropic"}
+        visible={presentation.active}
+        onEventClick={goToEvent}
+      />
     </div>
   );
 }
