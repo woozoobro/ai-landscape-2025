@@ -1,10 +1,11 @@
 "use client";
 
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Suspense, useState, useRef, useEffect } from "react";
+import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import SpaceGraph from "./SpaceGraph";
+import TimelineBar from "./TimelineBar";
 import { CameraControls, Loader } from "@react-three/drei";
-import { EventNode } from "@/app/data/events";
+import { EventNode, Company, events } from "@/app/data/events";
 import { X } from "lucide-react";
 import {
   EffectComposer,
@@ -31,12 +32,10 @@ const CAMERA_DEFAULT = { pos: [0, 30, 55], target: [0, 0, -10] }; // Normal view
 // Camera controller component that handles zoom transitions
 function CameraController({
   selectedNode,
-  selectedNodePosition,
   cameraControlsRef,
   onIntroComplete,
 }: {
   selectedNode: EventNode | null;
-  selectedNodePosition: [number, number, number] | null;
   cameraControlsRef: React.RefObject<CameraControlsType | null>;
   onIntroComplete: () => void;
 }) {
@@ -142,7 +141,7 @@ function CameraController({
         const cameraOffsets: Record<string, { x: number; y: number; z: number }> = {
           Anthropic: { x: -12, y: 28, z: 35 },  // Camera from above-left → hides Google behind
           OpenAI: { x: 12, y: 28, z: 35 },      // Camera from above-right → hides Google behind
-          Google: { x: 0, y: 28, z: 38 },       // Camera from above → hides Anthropic/OpenAI below
+          Google: { x: 0, y: 28, z: 50 },       // Camera from above → hides Anthropic/OpenAI below
         };
 
         const offset = cameraOffsets[selectedNode.company] || cameraOffsets.Anthropic;
@@ -191,19 +190,128 @@ const COLORS: Record<string, string> = {
   Google: "#4285f4",
 };
 
+// Presentation Mode state interface
+interface PresentationState {
+  active: boolean;
+  company: Company | null;
+  currentIndex: number;
+  sortedEvents: EventNode[];
+}
+
 export default function Scene() {
   const [selectedNode, setSelectedNode] = useState<EventNode | null>(null);
-  const [selectedNodePosition, setSelectedNodePosition] = useState<[number, number, number] | null>(null);
   const [hoveredNode, setHoveredNode] = useState<EventNode | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [introComplete, setIntroComplete] = useState(false);
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
 
-  // Handle node selection with position
-  const handleNodeSelect = (node: EventNode | null, position?: [number, number, number]) => {
+  // Presentation Mode state
+  const [presentation, setPresentation] = useState<PresentationState>({
+    active: false,
+    company: null,
+    currentIndex: 0,
+    sortedEvents: [],
+  });
+
+  // Handle node selection
+  const handleNodeSelect = useCallback((node: EventNode | null) => {
     setSelectedNode(node);
-    setSelectedNodePosition(position ?? null);
-  };
+
+    // Sync presentation index when clicking a node during presentation mode
+    if (presentation.active && node) {
+      const nodeIndex = presentation.sortedEvents.findIndex(e => e.id === node.id);
+      if (nodeIndex !== -1 && nodeIndex !== presentation.currentIndex) {
+        setPresentation(prev => ({ ...prev, currentIndex: nodeIndex }));
+      }
+    }
+  }, [presentation.active, presentation.sortedEvents, presentation.currentIndex]);
+
+  // Enter Presentation Mode for a company
+  const enterPresentationMode = useCallback((company: Company) => {
+    const sortedEvents = events
+      .filter((e) => e.company === company)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (sortedEvents.length === 0) return;
+
+    setPresentation({
+      active: true,
+      company,
+      currentIndex: 0,
+      sortedEvents,
+    });
+
+    // Auto-select first event
+    setSelectedNode(sortedEvents[0]);
+  }, []);
+
+  // Exit Presentation Mode
+  const exitPresentationMode = useCallback(() => {
+    setPresentation({
+      active: false,
+      company: null,
+      currentIndex: 0,
+      sortedEvents: [],
+    });
+    setSelectedNode(null);
+  }, []);
+
+  // Navigate to next event
+  const goToNextEvent = useCallback(() => {
+    if (!presentation.active) return;
+
+    const nextIndex = presentation.currentIndex + 1;
+    if (nextIndex >= presentation.sortedEvents.length) return; // Stop at end
+
+    setPresentation((prev) => ({ ...prev, currentIndex: nextIndex }));
+    setSelectedNode(presentation.sortedEvents[nextIndex]);
+  }, [presentation]);
+
+  // Navigate to previous event
+  const goToPrevEvent = useCallback(() => {
+    if (!presentation.active) return;
+
+    const prevIndex = presentation.currentIndex - 1;
+    if (prevIndex < 0) return; // Stop at start
+
+    setPresentation((prev) => ({ ...prev, currentIndex: prevIndex }));
+    setSelectedNode(presentation.sortedEvents[prevIndex]);
+  }, [presentation]);
+
+  // Navigate to specific event (for timeline clicks)
+  const goToEvent = useCallback((index: number) => {
+    if (!presentation.active) return;
+    if (index < 0 || index >= presentation.sortedEvents.length) return;
+
+    setPresentation((prev) => ({ ...prev, currentIndex: index }));
+    setSelectedNode(presentation.sortedEvents[index]);
+  }, [presentation]);
+
+  // Keyboard navigation for Presentation Mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!presentation.active) return;
+
+      switch (e.key) {
+        case "ArrowRight":
+        case " ": // Space
+          e.preventDefault();
+          goToNextEvent();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          goToPrevEvent();
+          break;
+        case "Escape":
+          e.preventDefault();
+          exitPresentationMode();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [presentation.active, goToNextEvent, goToPrevEvent, exitPresentationMode]);
 
   // Track mouse position for tooltip
   useEffect(() => {
@@ -227,12 +335,14 @@ export default function Scene() {
           <SpaceGraph
             onNodeSelect={handleNodeSelect}
             onNodeHover={setHoveredNode}
+            onPlanetClick={enterPresentationMode}
             selectedNode={selectedNode}
             introComplete={introComplete}
+            presentationMode={presentation.active}
+            presentationCompany={presentation.company}
           />
           <CameraController
             selectedNode={selectedNode}
-            selectedNodePosition={selectedNodePosition}
             cameraControlsRef={cameraControlsRef}
             onIntroComplete={() => setIntroComplete(true)}
           />
@@ -380,6 +490,17 @@ export default function Scene() {
 
           </div>
         </div>
+      )}
+
+      {/* Presentation Mode Timeline Bar */}
+      {presentation.company && (
+        <TimelineBar
+          events={presentation.sortedEvents}
+          currentIndex={presentation.currentIndex}
+          company={presentation.company}
+          visible={presentation.active}
+          onEventClick={goToEvent}
+        />
       )}
     </div>
   );

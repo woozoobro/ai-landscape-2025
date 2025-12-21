@@ -183,8 +183,11 @@ function simulateForces(
 interface SpaceGraphProps {
   onNodeSelect: (node: EventNode | null, position?: [number, number, number]) => void;
   onNodeHover: (node: EventNode | null) => void;
+  onPlanetClick?: (company: Company) => void;
   selectedNode: EventNode | null;
   introComplete: boolean;
+  presentationMode?: boolean;
+  presentationCompany?: Company | null;
 }
 
 // Easing function for bounce effect
@@ -236,11 +239,14 @@ function Planet({
   company,
   revealed,
   delay,
+  onClick,
 }: {
   company: Company;
   revealed: boolean;
   delay: number;
+  onClick?: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const position = PLANET_POSITIONS[company];
@@ -291,12 +297,27 @@ function Planet({
   return (
     <group ref={groupRef} position={position}>
       {/* Planet body - smaller, acts as cluster center (Toon shading) */}
-      <mesh ref={meshRef}>
+      <mesh
+        ref={meshRef}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = "pointer";
+          setHovered(true);
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = "auto";
+          setHovered(false);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.();
+        }}
+      >
         <sphereGeometry args={[scaledRadius, 64, 64]} />
         <meshToonMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.8}
+          emissiveIntensity={hovered ? 1.2 : 0.8}
           gradientMap={getToonGradientTexture()}
         />
       </mesh>
@@ -343,6 +364,7 @@ function GraphNode({
   onHover,
   selected,
   revealed,
+  dimmed = false,
 }: {
   event: EventNode;
   position: [number, number, number];
@@ -350,13 +372,16 @@ function GraphNode({
   onHover: (e: EventNode | null) => void;
   selected: boolean;
   revealed: boolean;
+  dimmed?: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
+  const outlineRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
   // Performance: useRef instead of useState to avoid re-renders every frame
   const scaleRef = useRef(0);
+  const opacityRef = useRef(1);
   const [labelVisible, setLabelVisible] = useState(false);
   const wasVisibleRef = useRef(false);
   const color = COLORS[event.company];
@@ -418,6 +443,26 @@ function GraphNode({
       }
     }
 
+    // Smooth opacity transition for dimmed state
+    const targetOpacity = dimmed ? 0.25 : 1;
+    opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, targetOpacity, 0.08);
+
+    // Apply opacity to materials
+    if (meshRef.current?.material) {
+      const material = meshRef.current.material as THREE.MeshToonMaterial;
+      material.transparent = true;
+      material.opacity = opacityRef.current;
+    }
+    if (outlineRef.current?.material) {
+      const material = outlineRef.current.material as THREE.MeshBasicMaterial;
+      material.opacity = 0.7 * opacityRef.current;
+    }
+    if (glowRef.current?.material) {
+      const glowMaterial = glowRef.current.material as THREE.MeshBasicMaterial;
+      const baseGlowOpacity = selected ? 0.3 : hovered ? 0.2 : 0.08;
+      glowMaterial.opacity = baseGlowOpacity * opacityRef.current;
+    }
+
     // Only trigger re-render when crossing label visibility threshold
     const shouldBeVisible = scaleRef.current > 0.5;
     if (shouldBeVisible !== wasVisibleRef.current) {
@@ -457,7 +502,7 @@ function GraphNode({
       </mesh>
 
       {/* Toon outline - bright white for visibility */}
-      <mesh scale={1.18}>
+      <mesh ref={outlineRef} scale={1.18}>
         <sphereGeometry args={[baseSize, 16, 16]} />
         <meshBasicMaterial
           color="#ffffff"
@@ -485,7 +530,7 @@ function GraphNode({
           center
           zIndexRange={[1000, 0]}
           style={{
-            opacity: selected || hovered ? 1 : 0.7,
+            opacity: dimmed ? 0.25 : (selected || hovered ? 1 : 0.7),
             transition: "opacity 0.3s ease-out",
           }}
         >
@@ -538,8 +583,11 @@ function getInitialClusterPosition(
 export default function SpaceGraph({
   onNodeSelect,
   onNodeHover,
+  onPlanetClick,
   selectedNode,
   introComplete,
+  presentationMode = false,
+  presentationCompany = null,
 }: SpaceGraphProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set());
@@ -647,9 +695,9 @@ export default function SpaceGraph({
 
       <group ref={groupRef}>
         {/* Planets - cluster centers with staggered reveal */}
-        <Planet company="Anthropic" revealed={introComplete} delay={0} />
-        <Planet company="OpenAI" revealed={introComplete} delay={0.3} />
-        <Planet company="Google" revealed={introComplete} delay={0.6} />
+        <Planet company="Anthropic" revealed={introComplete} delay={0} onClick={() => onPlanetClick?.("Anthropic")} />
+        <Planet company="OpenAI" revealed={introComplete} delay={0.3} onClick={() => onPlanetClick?.("OpenAI")} />
+        <Planet company="Google" revealed={introComplete} delay={0.6} onClick={() => onPlanetClick?.("Google")} />
 
         {/* Graph Nodes - Obsidian style */}
         {nodesWithPositions.map(({ event, position }) => (
@@ -661,6 +709,7 @@ export default function SpaceGraph({
             onHover={onNodeHover}
             selected={selectedNode?.id === event.id}
             revealed={revealedNodes.has(event.id)}
+            dimmed={presentationMode && event.company !== presentationCompany}
           />
         ))}
       </group>

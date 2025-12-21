@@ -50,12 +50,25 @@ const NODE_SIZE_CONFIG = {
 #### 5. 인터랙션
 - **노드 클릭**: 상세 정보 패널 표시 (우측 슬라이드, 450px, z-index: 2000)
 - **노드 호버**: 마우스 따라다니는 툴팁 (화면 고정 크기, z-index: 99999)
+- **행성 클릭**: Presentation Mode 진입
 - **카메라 컨트롤**: 줌/팬/회전 (CameraControls)
 - **노드 선택 시 카메라 동작**:
   - `setViewOffset`으로 패널 보정 (뷰포트 자체를 왼쪽으로 오프셋)
   - 각 행성별 카메라 각도 조정 (다른 행성 가림 처리)
   - offset 애니메이션 (lerp 0.02로 부드럽게 전환)
 - **라벨 표시**: 항상 표시 (zIndexRange 설정으로 UI와 자연스럽게 레이어링)
+
+#### 8. Presentation Mode (발표 모드) ✅
+- **진입**: 행성 클릭 시 해당 회사의 이벤트를 시간순으로 탐색
+- **키보드 네비게이션**:
+  - `→` / `Space`: 다음 이벤트
+  - `←`: 이전 이벤트
+  - `Esc`: Overview로 복귀
+- **노드 Dim 효과**: 선택된 회사 외 노드들 opacity 0.25로 dim (lerp 애니메이션 0.08)
+- **타임라인 바**: 하단에 월별 도트 표시, 현재 이벤트 강조, 클릭으로 이동 가능
+- **상세 패널**: 현재 이벤트 정보 자동 표시, 노드 클릭 시 인덱스 동기화
+- **관련 파일**: Scene.tsx (상태/키보드), SpaceGraph.tsx (dim 효과), TimelineBar.tsx (UI)
+- **구현 완료**: 2025-12-21
 
 #### 6. 노드 애니메이션
 - **Floating**: 모든 노드 위아래 부유 효과 (amplitude: 0.15)
@@ -72,8 +85,9 @@ const NODE_SIZE_CONFIG = {
 
 ```
 components/
-├── Scene.tsx           # 메인 Canvas, 카메라 컨트롤, UI 오버레이
-├── SpaceGraph.tsx      # 3D 그래프 (행성, 노드, 조명)
+├── Scene.tsx           # 메인 Canvas, 카메라 컨트롤, UI 오버레이, Presentation Mode 상태
+├── SpaceGraph.tsx      # 3D 그래프 (행성, 노드, 조명, dim 효과)
+├── TimelineBar.tsx     # Presentation Mode 타임라인 UI (하단 도트)
 ├── Nebula.tsx          # 배경 성운 효과 (Billboard)
 ├── DustParticles.tsx   # 먼지 파티클 시스템
 └── nodes/
@@ -127,6 +141,12 @@ interface EventNode {
 - [ ] 모바일 최적화
 
 ### 완료된 개선 사항 (2025-12-21)
+- [x] **Presentation Mode 구현**
+  - 행성 클릭으로 발표 모드 진입
+  - 키보드 네비게이션 (←/→/Space/Esc)
+  - 비활성 회사 노드 Dim 효과 (opacity 0.25, lerp 애니메이션)
+  - TimelineBar 컴포넌트 (하단 도트 UI, 클릭 이동)
+  - 상세 패널 자동 표시 및 인덱스 동기화
 - [x] **노드 선택 시 카메라 시스템 전면 개선**
   - `setViewOffset` 도입: 패널(450px) 고려한 뷰포트 오프셋
   - 카메라 회전 자연스러움 유지 (카메라 위치가 아닌 뷰포트로 보정)
