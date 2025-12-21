@@ -222,9 +222,9 @@ function CompanyNebula({
 
 // Planet positions (must match SpaceGraph.tsx)
 const PLANET_POSITIONS = {
-  Anthropic: [-28, 0, 0] as [number, number, number],
-  OpenAI: [28, 0, 0] as [number, number, number],
-  Google: [0, 5, -32] as [number, number, number],
+  Anthropic: [-30, 0, 1] as [number, number, number],
+  OpenAI: [30, 0, 1] as [number, number, number],
+  Google: [0, 5, -35] as [number, number, number],
 };
 
 const COLORS = {

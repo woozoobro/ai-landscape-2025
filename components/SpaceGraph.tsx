@@ -31,9 +31,9 @@ const LOGO_SCALE: Record<Company, number> = {
 
 // Planet positions (triangle formation) - spread out more
 const PLANET_POSITIONS: Record<Company, [number, number, number]> = {
-  Anthropic: [-28, 0, 0],
-  OpenAI: [28, 0, 0],
-  Google: [0, 5, -32],
+  Anthropic: [-30, 0, 1],
+  OpenAI: [30, 0, 1],
+  Google: [0, 5, -35],
 };
 
 const PLANET_RADIUS = 3.0;
@@ -181,7 +181,7 @@ function simulateForces(
 }
 
 interface SpaceGraphProps {
-  onNodeSelect: (node: EventNode | null) => void;
+  onNodeSelect: (node: EventNode | null, position?: [number, number, number]) => void;
   onNodeHover: (node: EventNode | null) => void;
   selectedNode: EventNode | null;
   introComplete: boolean;
@@ -346,7 +346,7 @@ function GraphNode({
 }: {
   event: EventNode;
   position: [number, number, number];
-  onSelect: (e: EventNode) => void;
+  onSelect: (e: EventNode, pos: [number, number, number]) => void;
   onHover: (e: EventNode | null) => void;
   selected: boolean;
   revealed: boolean;
@@ -444,7 +444,7 @@ function GraphNode({
         }}
         onClick={(e) => {
           e.stopPropagation();
-          onSelect(event);
+          onSelect(event, position);
         }}
       >
         <sphereGeometry args={[baseSize, 32, 32]} />

@@ -16,9 +16,9 @@ import type { CameraControls as CameraControlsType } from "@react-three/drei";
 
 // Planet positions for camera targeting
 const PLANET_POSITIONS: Record<string, [number, number, number]> = {
-  Anthropic: [-28, 0, 0],
-  OpenAI: [28, 0, 0],
-  Google: [0, 5, -32],
+  Anthropic: [-30, 0, 1],
+  OpenAI: [30, 0, 1],
+  Google: [0, 5, -35],
 };
 
 // Camera positions
@@ -28,10 +28,12 @@ const CAMERA_DEFAULT = { pos: [0, 30, 55], target: [0, 0, -10] }; // Normal view
 // Camera controller component that handles zoom transitions
 function CameraController({
   selectedNode,
+  selectedNodePosition,
   cameraControlsRef,
   onIntroComplete,
 }: {
   selectedNode: EventNode | null;
+  selectedNodePosition: [number, number, number] | null;
   cameraControlsRef: React.RefObject<CameraControlsType | null>;
   onIntroComplete: () => void;
 }) {
@@ -83,16 +85,20 @@ function CameraController({
     const controls = cameraControlsRef.current;
 
     if (selectedNode) {
-      // Zoom to company cluster when node is selected
+      // Use planet position as the focal point (shows whole cluster)
       const planetPos = PLANET_POSITIONS[selectedNode.company];
       if (planetPos) {
+        // Offset camera to the LEFT to account for right-side panel
+        // This centers the planet cluster in the visible area (excluding panel)
+        const panelCompensation = 50; // Shift left to compensate for 450px right panel
+
         controls.setLookAt(
-          planetPos[0] + 10,
-          planetPos[1] + 15,
-          planetPos[2] + 32,
-          planetPos[0],
-          planetPos[1],
-          planetPos[2],
+          planetPos[0] + panelCompensation,  // Camera X: shifted left
+          planetPos[1] + 18,                  // Camera Y: above
+          planetPos[2] + 45,                  // Camera Z: distance
+          planetPos[0] + panelCompensation * 0.3,  // Target X: slightly left too
+          planetPos[1],                       // Target Y: planet center
+          planetPos[2],                       // Target Z: planet center
           true
         );
       }
@@ -132,10 +138,17 @@ const COLORS: Record<string, string> = {
 
 export default function Scene() {
   const [selectedNode, setSelectedNode] = useState<EventNode | null>(null);
+  const [selectedNodePosition, setSelectedNodePosition] = useState<[number, number, number] | null>(null);
   const [hoveredNode, setHoveredNode] = useState<EventNode | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [introComplete, setIntroComplete] = useState(false);
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
+
+  // Handle node selection with position
+  const handleNodeSelect = (node: EventNode | null, position?: [number, number, number]) => {
+    setSelectedNode(node);
+    setSelectedNodePosition(position ?? null);
+  };
 
   // Track mouse position for tooltip
   useEffect(() => {
@@ -157,13 +170,14 @@ export default function Scene() {
         <color attach="background" args={["#030308"]} />
         <Suspense fallback={null}>
           <SpaceGraph
-            onNodeSelect={setSelectedNode}
+            onNodeSelect={handleNodeSelect}
             onNodeHover={setHoveredNode}
             selectedNode={selectedNode}
             introComplete={introComplete}
           />
           <CameraController
             selectedNode={selectedNode}
+            selectedNodePosition={selectedNodePosition}
             cameraControlsRef={cameraControlsRef}
             onIntroComplete={() => setIntroComplete(true)}
           />
@@ -255,7 +269,7 @@ export default function Scene() {
       {selectedNode && (
         <div className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-[2000] flex flex-col transform transition-transform duration-300">
           <button
-            onClick={() => setSelectedNode(null)}
+            onClick={() => handleNodeSelect(null)}
             className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
           >
             <X className="w-6 h-6 text-zinc-400" />
