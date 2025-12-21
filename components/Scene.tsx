@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Suspense, useState, useRef, useEffect } from "react";
 import SpaceGraph from "./SpaceGraph";
 import { CameraControls, Loader } from "@react-three/drei";
@@ -13,6 +13,9 @@ import {
 } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { CameraControls as CameraControlsType } from "@react-three/drei";
+
+// Panel width for viewport offset calculation
+const PANEL_WIDTH = 450;
 
 // Planet positions for camera targeting
 const PLANET_POSITIONS: Record<string, [number, number, number]> = {
@@ -37,7 +40,53 @@ function CameraController({
   cameraControlsRef: React.RefObject<CameraControlsType | null>;
   onIntroComplete: () => void;
 }) {
+  const { camera, size } = useThree();
   const [introPlayed, setIntroPlayed] = useState(false);
+  const currentOffsetRef = useRef(0);
+  const targetOffsetRef = useRef(0);
+
+  // Update target offset when selection changes
+  useEffect(() => {
+    targetOffsetRef.current = selectedNode ? PANEL_WIDTH / 2 : 0;
+  }, [selectedNode]);
+
+  // Animate viewport offset smoothly
+  useFrame(() => {
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    const target = targetOffsetRef.current;
+    const current = currentOffsetRef.current;
+
+    // Lerp towards target
+    if (Math.abs(target - current) > 0.1) {
+      currentOffsetRef.current = THREE.MathUtils.lerp(current, target, 0.02);
+
+      perspectiveCamera.setViewOffset(
+        size.width,
+        size.height,
+        currentOffsetRef.current,
+        0,
+        size.width,
+        size.height
+      );
+      perspectiveCamera.updateProjectionMatrix();
+    } else if (current !== target) {
+      // Snap to final value
+      currentOffsetRef.current = target;
+      if (target === 0) {
+        perspectiveCamera.clearViewOffset();
+      } else {
+        perspectiveCamera.setViewOffset(
+          size.width,
+          size.height,
+          target,
+          0,
+          size.width,
+          size.height
+        );
+      }
+      perspectiveCamera.updateProjectionMatrix();
+    }
+  });
 
   // Intro animation - zoom in from far away
   useEffect(() => {
@@ -88,17 +137,23 @@ function CameraController({
       // Use planet position as the focal point (shows whole cluster)
       const planetPos = PLANET_POSITIONS[selectedNode.company];
       if (planetPos) {
-        // Offset camera to the LEFT to account for right-side panel
-        // This centers the planet cluster in the visible area (excluding panel)
-        const panelCompensation = 50; // Shift left to compensate for 450px right panel
+        // Per-company camera angles to isolate each planet from others
+        // ViewOffset handles panel compensation, this handles hiding other planets
+        const cameraOffsets: Record<string, { x: number; y: number; z: number }> = {
+          Anthropic: { x: -12, y: 28, z: 35 },  // Camera from above-left → hides Google behind
+          OpenAI: { x: 12, y: 28, z: 35 },      // Camera from above-right → hides Google behind
+          Google: { x: 0, y: 28, z: 38 },       // Camera from above → hides Anthropic/OpenAI below
+        };
+
+        const offset = cameraOffsets[selectedNode.company] || cameraOffsets.Anthropic;
 
         controls.setLookAt(
-          planetPos[0] + panelCompensation,  // Camera X: shifted left
-          planetPos[1] + 18,                  // Camera Y: above
-          planetPos[2] + 45,                  // Camera Z: distance
-          planetPos[0] + panelCompensation * 0.3,  // Target X: slightly left too
-          planetPos[1],                       // Target Y: planet center
-          planetPos[2],                       // Target Z: planet center
+          planetPos[0] + offset.x,  // Camera X
+          planetPos[1] + offset.y,  // Camera Y
+          planetPos[2] + offset.z,  // Camera Z
+          planetPos[0],             // Target X: planet center
+          planetPos[1],             // Target Y: planet center
+          planetPos[2],             // Target Z: planet center
           true
         );
       }
