@@ -50,6 +50,19 @@ const DEPTH_SCALE: Record<Company, number> = {
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
 // ===========================================
+// SHARED GEOMETRIES (Performance Optimization)
+// Single instances shared across all nodes/planets
+// ===========================================
+const SharedGeometries = {
+  nodeSphere: new THREE.SphereGeometry(1, 32, 32),
+  nodeOutline: new THREE.SphereGeometry(1, 16, 16),
+  nodeGlow: new THREE.SphereGeometry(1, 16, 16),
+  planetSphere: new THREE.SphereGeometry(1, 64, 64),
+  planetOutline: new THREE.SphereGeometry(1, 32, 32),
+  planetGlow: new THREE.SphereGeometry(1, 32, 32),
+};
+
+// ===========================================
 // FLOATING ANIMATION CONFIG
 // Subtle up/down bobbing for all nodes
 // ===========================================
@@ -180,6 +193,9 @@ function simulateForces(
   return map;
 }
 
+// Zoom level type for label visibility optimization
+type ZoomLevel = "far" | "mid" | "close";
+
 interface SpaceGraphProps {
   onNodeSelect: (node: EventNode | null, position?: [number, number, number]) => void;
   onNodeHover: (node: EventNode | null) => void;
@@ -188,6 +204,7 @@ interface SpaceGraphProps {
   introComplete: boolean;
   presentationMode?: boolean;
   presentationCompany?: Company | null;
+  zoomLevel?: ZoomLevel;
 }
 
 // Easing function for bounce effect
@@ -299,6 +316,7 @@ function Planet({
       {/* Planet body - smaller, acts as cluster center (Toon shading) */}
       <mesh
         ref={meshRef}
+        scale={scaledRadius}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = "pointer";
@@ -313,7 +331,7 @@ function Planet({
           onClick?.();
         }}
       >
-        <sphereGeometry args={[scaledRadius, 64, 64]} />
+        <primitive object={SharedGeometries.planetSphere} attach="geometry" />
         <meshToonMaterial
           color={color}
           emissive={color}
@@ -323,14 +341,14 @@ function Planet({
       </mesh>
 
       {/* Toon outline - bright white-ish for visibility */}
-      <mesh scale={1.06}>
-        <sphereGeometry args={[scaledRadius, 32, 32]} />
+      <mesh scale={scaledRadius * 1.06}>
+        <primitive object={SharedGeometries.planetOutline} attach="geometry" />
         <meshBasicMaterial color="#ffffff" side={THREE.BackSide} transparent opacity={0.8} />
       </mesh>
 
       {/* Inner glow */}
-      <mesh>
-        <sphereGeometry args={[scaledRadius * 1.2, 32, 32]} />
+      <mesh scale={scaledRadius * 1.2}>
+        <primitive object={SharedGeometries.planetGlow} attach="geometry" />
         <meshBasicMaterial
           color={color}
           transparent
@@ -340,8 +358,8 @@ function Planet({
       </mesh>
 
       {/* Outer glow */}
-      <mesh>
-        <sphereGeometry args={[scaledRadius * 1.5, 32, 32]} />
+      <mesh scale={scaledRadius * 1.5}>
+        <primitive object={SharedGeometries.planetGlow} attach="geometry" />
         <meshBasicMaterial
           color={color}
           transparent
@@ -365,6 +383,7 @@ function GraphNode({
   selected,
   revealed,
   dimmed = false,
+  showLabel = true,
 }: {
   event: EventNode;
   position: [number, number, number];
@@ -373,6 +392,7 @@ function GraphNode({
   selected: boolean;
   revealed: boolean;
   dimmed?: boolean;
+  showLabel?: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -476,6 +496,7 @@ function GraphNode({
       {/* Main node sphere */}
       <mesh
         ref={meshRef}
+        scale={baseSize}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = "pointer";
@@ -492,7 +513,7 @@ function GraphNode({
           onSelect(event, position);
         }}
       >
-        <sphereGeometry args={[baseSize, 32, 32]} />
+        <primitive object={SharedGeometries.nodeSphere} attach="geometry" />
         <meshToonMaterial
           color={color}
           emissive={color}
@@ -502,8 +523,8 @@ function GraphNode({
       </mesh>
 
       {/* Toon outline - bright white for visibility */}
-      <mesh ref={outlineRef} scale={1.18}>
-        <sphereGeometry args={[baseSize, 16, 16]} />
+      <mesh ref={outlineRef} scale={baseSize * 1.18}>
+        <primitive object={SharedGeometries.nodeOutline} attach="geometry" />
         <meshBasicMaterial
           color="#ffffff"
           side={THREE.BackSide}
@@ -513,8 +534,8 @@ function GraphNode({
       </mesh>
 
       {/* Glow sphere */}
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[baseSize * 1.3, 16, 16]} />
+      <mesh ref={glowRef} scale={baseSize * 1.3}>
+        <primitive object={SharedGeometries.nodeGlow} attach="geometry" />
         <meshBasicMaterial
           color={color}
           transparent
@@ -523,8 +544,8 @@ function GraphNode({
         />
       </mesh>
 
-      {/* Label - render when visible, opacity controlled by CSS transition */}
-      {labelVisible && (
+      {/* Label - render when visible and showLabel is true (zoom level optimization) */}
+      {labelVisible && showLabel && (
         <Html
           position={[0, baseSize + 0.8, 0]}
           center
@@ -588,7 +609,10 @@ export default function SpaceGraph({
   introComplete,
   presentationMode = false,
   presentationCompany = null,
+  zoomLevel = "mid",
 }: SpaceGraphProps) {
+  // Hide labels when zoomed out far (performance optimization)
+  const showLabels = zoomLevel !== "far";
   const groupRef = useRef<THREE.Group>(null);
   const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set());
   // Group events by company
@@ -710,6 +734,7 @@ export default function SpaceGraph({
             selected={selectedNode?.id === event.id}
             revealed={revealedNodes.has(event.id)}
             dimmed={presentationMode && event.company !== presentationCompany}
+            showLabel={showLabels}
           />
         ))}
       </group>

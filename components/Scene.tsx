@@ -26,27 +26,33 @@ const PLANET_POSITIONS: Record<string, [number, number, number]> = {
 const CAMERA_START = { pos: [0, 80, 180], target: [0, 0, -20] }; // Far away in space
 const CAMERA_DEFAULT = { pos: [0, 30, 55], target: [0, 0, -10] }; // Normal view
 
+// Zoom level type for label visibility optimization
+type ZoomLevel = "far" | "mid" | "close";
+
 // Camera controller component that handles zoom transitions
 function CameraController({
   selectedNode,
   cameraControlsRef,
   onIntroComplete,
+  onZoomLevelChange,
 }: {
   selectedNode: EventNode | null;
   cameraControlsRef: React.RefObject<CameraControlsType | null>;
   onIntroComplete: () => void;
+  onZoomLevelChange: (level: ZoomLevel) => void;
 }) {
   const { camera, size } = useThree();
   const [introPlayed, setIntroPlayed] = useState(false);
   const currentOffsetRef = useRef(0);
   const targetOffsetRef = useRef(0);
+  const lastZoomLevelRef = useRef<ZoomLevel>("mid");
 
   // Update target offset when selection changes (50% panel = size.width/4 offset)
   useEffect(() => {
     targetOffsetRef.current = selectedNode ? size.width / 4 : 0;
   }, [selectedNode, size.width]);
 
-  // Animate viewport offset smoothly
+  // Animate viewport offset smoothly + track zoom level
   useFrame(() => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     const target = targetOffsetRef.current;
@@ -81,6 +87,14 @@ function CameraController({
         );
       }
       perspectiveCamera.updateProjectionMatrix();
+    }
+
+    // Track zoom level for label visibility optimization
+    const distance = camera.position.length();
+    const newZoomLevel: ZoomLevel = distance > 100 ? "far" : distance > 50 ? "mid" : "close";
+    if (newZoomLevel !== lastZoomLevelRef.current) {
+      lastZoomLevelRef.current = newZoomLevel;
+      onZoomLevelChange(newZoomLevel);
     }
   });
 
@@ -200,6 +214,7 @@ export default function Scene() {
   const [hoveredNode, setHoveredNode] = useState<EventNode | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [introComplete, setIntroComplete] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>("mid");
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
 
   // Presentation Mode state
@@ -356,11 +371,13 @@ export default function Scene() {
             introComplete={introComplete}
             presentationMode={presentation.active}
             presentationCompany={presentation.company}
+            zoomLevel={zoomLevel}
           />
           <CameraController
             selectedNode={selectedNode}
             cameraControlsRef={cameraControlsRef}
             onIntroComplete={() => setIntroComplete(true)}
+            onZoomLevelChange={setZoomLevel}
           />
           <EffectComposer multisampling={0}>
             {/* Core glow - bright parts */}

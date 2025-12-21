@@ -158,6 +158,10 @@ interface EventNode {
 - [x] **행성 위치 조정** (적당한 간격으로 재배치)
   - [-28,0,0] → [-30,0,1], [28,0,0] → [30,0,1], [0,5,-32] → [0,5,-35]
 - [x] 노드 선택 시 줌인 거리 완화
+- [x] **성능 최적화**
+  - **Geometry 공유**: `SharedGeometries` 객체로 144개 → 6개 인스턴스 (96% 감소)
+  - **DustParticles GPU 전환**: CPU 기반 애니메이션 → ShaderMaterial (useFrame O(n) → O(1))
+  - **라벨 줌 레벨 최적화**: 원거리(zoomLevel="far")에서 Html 라벨 숨김
 
 ### 완료된 개선 사항 (2025-12-20)
 - [x] Scene 회전 제거 (Nebula 동기화 문제 해결)
