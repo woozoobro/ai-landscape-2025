@@ -1,6 +1,7 @@
 # 2025 LLM 한 해 돌아보기
 
 > 원문: [Andrej Karpathy - 2025 LLM Year in Review](https://x.com/karpathy/status/2002118205729562949)
+> https://karpathy.bearblog.dev/year-in-review-2025/
 > 작성일: 2025년 12월 20일
 
 2025년은 LLM이 정말 빠르게 발전한 해였다. 아래는 내가 보기에 특히 주목할 만하고, 약간 놀라웠던 "패러다임 전환"들이다 - 판도를 바꾸고 개념적으로 눈에 띄었던 것들.
