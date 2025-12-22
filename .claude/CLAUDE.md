@@ -33,7 +33,7 @@ ai-landscape-2025/
 │   └── DustParticles.tsx   # 먼지 파티클
 ├── docs/                   # 문서
 │   ├── progress.md         # 개발 진행 상황 (필독)
-│   └── inflearn-live.md    # 3사 트렌드 정리
+│   └── 00-inflearn-live-sketch.md    # 3사 트렌드 정리
 └── .claude/                # Claude Code 설정
 ```
 
