@@ -13,5 +13,17 @@
     "deny": [],
     "ask": []
   },
-  "enabledPlugins": {}
+  "enabledPlugins": {},
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/log-prompt.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
