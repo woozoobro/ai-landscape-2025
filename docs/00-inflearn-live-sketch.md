@@ -15,73 +15,82 @@ OpenAI는 '일상의 넓이'를,
 ### 25.2월
 
 - [Claude 3.7 Sonnet 출시](https://www.anthropic.com/news/claude-3-7-sonnet) - 하이브리드 추론 모델
-
   - 하나의 모델에서 빠른 응답 / extended thinking(깊은 사고) 모드 선택 가능
+  > 빼기
 
-- `Claude Code` Research Preview 함께 발표
+- `Claude Code` Research Preview 함께 발표 
   - 터미널(CLI) 기반 에이전틱 코딩 도구. 파일 읽기/수정, 명령어 실행까지 가능
   - 당시 Cursor 같은 IDE 통합형이 주류였는데, CLI로 나온 게 영리했음
   - "터미널이라서 어떤 IDE든 가져다 쓸 수 있다" - Anthropic 엔지니어
+  > 중요!
+  > 미디어 필요
 
 ### 25.3월
 
 - [웹 검색 기능 출시](https://claude.com/blog/web-search): 경쟁사 대비 늦은 편
 
-- OpenAI가 MCP 공식 채택, 챗GPT 데스크톱 앱, Agents SDK 등에 적용
+- [OpenAI가 MCP 공식 채택](https://openai.github.io/openai-agents-python/mcp/) 
+  - 챗GPT 데스크톱 앱, Agents SDK 등에 적용
+  > 추가 필요
 
 ### 25.5월
 
 - [Claude 4 출시](https://www.anthropic.com/news/claude-4)
-
   - Opus 4: 테스트에서 7시간 연속 작업 수행, 내부 안전 등급 "Level 3" (4단계 중)
   - extended thinking + tool use 동시 사용 가능
+  > 빼기
 
 - `Claude Code` 정식 출시
   - IDE 플러그인(VS Code, JetBrains), GitHub 통합
   - Claude Code SDK 공개 - 개발자가 직접 에이전트 구축 가능
+  > 미디어 필요
 
 ### 25.8월
 
 - [Claude Opus 4.1](https://www.anthropic.com/news/claude-opus-4-1)
-
   - Opus 4의 업그레이드 버전, 코딩 능력 대폭 향상
   - 코딩 벤치마크(SWE-bench) 74.5% 달성
+  > 빼기
 
 - [Claude for Chrome Research Preview](https://claude.com/blog/claude-for-chrome)
-
   - 크롬 브라우저에서 바로 쓰는 AI 비서
   - 웹서핑하면서 옆에서 Claude가 도와줌 (사이드 패널)
   - 캘린더 일정 잡기, 이메일 정리, 파일 관리까지 자동화
   - Max 구독자 1,000명 한정 테스트로 시작
+  > 미디어 추가 필요
 
 - 기타: Voice mode(음성 대화), 메모리 기능(대화 내용 기억) 추가
 
 ### 25.9월
 
 - [Claude Sonnet 4.5 출시](https://www.anthropic.com/news/claude-sonnet-4-5)
-
   - "세계 최고의 코딩 모델" - Anthropic 공식 주장
   - 혼자서 30시간 연속 작업 가능 (이전 Opus 4는 7시간)
   - 컴퓨터 사용 능력 대폭 향상 (OSWorld 벤치마크 42% → 61%)
+  > 빼기
 
 - [Claude 파일 생성 기능 발표](https://claude.com/blog/create-files)
   - Excel, Word, PPT, PDF를 AI가 직접 만들어줌
   - "재무 모델 만들어줘" → 수식 포함된 엑셀 파일 뚝딱
+  - 미디어 자료 필요
+  > 미디어 추가 필요
 
 ### 25.10월
 
 - [Claude Haiku 4.5](https://www.anthropic.com/news/claude-haiku-4-5)
   - 작고 빠른 경량 모델, 근데 성능은 Sonnet 4급
   - 가격은 1/3, 속도는 2배 이상 빠름
+  > 빼기
+
 - [Claude Skills 발표](https://www.anthropic.com/news/skills)
   - Claude에게 "전문 스킬"을 장착시키는 기능
   - 예: 엑셀 전문가 스킬, 브랜드 가이드라인 스킬 등
   - 필요할 때만 불러와서 사용 → 효율적
+  > 미디어 추가 필요
 
 ### 25.11월
 
 - [Claude Code 웹 버전](https://www.anthropic.com/news/claude-code-on-the-web)
-
   - 터미널 없이 브라우저에서 코딩 에이전트 사용
   - 여러 작업을 동시에 돌려놓고 모니터링 가능
 
@@ -90,12 +99,13 @@ OpenAI는 '일상의 넓이'를,
   - Netflix, Spotify, KPMG, 로레알 등 글로벌 기업들이 사용 중
 
 - [Claude Opus 4.5 출시](https://www.anthropic.com/news/claude-opus-4-5)
-
   - "세계 최고의 코딩·에이전트·컴퓨터 사용 모델" - Anthropic
   - 코딩 벤치마크(SWE-bench) **최초 80% 돌파** (80.9%)
   - 가격 3배 인하: $15 → $5 (입력 토큰 기준)
+  > 빼기
 
-- Claude for Excel 정식 출시, Claude for Chrome 확대
+- Claude for Excel 베타 출시
+  > 미디어 추가 필요
 
 > 🗣️ **해외 반응 (Reddit/HN)**
 >
@@ -106,25 +116,26 @@ OpenAI는 '일상의 넓이'를,
 ### 25.12월
 
 - [Bun 인수](https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone)
-
   - Bun = 초고속 JavaScript 런타임 (Node.js 대체재)
   - Claude Code가 Bun 위에서 돌아감 → 핵심 인프라 내재화
   - 오픈소스(MIT 라이선스) 유지 약속
+  > 빼기
 
 - [Claude Code in Slack](https://claude.com/blog/claude-code-and-slack)
-
   - Slack 채팅에서 바로 코딩 작업 지시 가능
   - "이 버그 고쳐줘" → Claude가 알아서 코드 수정
-
-- MCP(Model Context Protocol)를 재단에 기부 → 업계 오픈 표준화 추진
+  > 미디어 추가 필요
 
 - [Claude for Chrome 정식 출시](https://www.anthropic.com/news/claude-for-chrome)
   - 8월 Research Preview → 11월 Max 전용 → **12월 모든 유료 구독자 확대**
   - Claude Code 통합, 워크플로우 녹화/학습 기능 추가
-  - 예정 기능: Shortcuts(명령 템플릿), Planning Mode(실행 전 계획 확인)
+  > 미디어 추가 필요
+
+- MCP(Model Context Protocol)를 재단에 기부 → 업계 오픈 표준화 추진
+  > 미디어 추가 필요
+
 
 > 🗣️ **해외 반응 (Reddit/HN)**
->
 > - "Bun 오픈소스 유지한다니 다행. 근데 인수 후 '아무것도 안 바뀐다'는 말, 몇 년 지나면 항상 달라짐"
 > - "Claude Code가 Bun으로 돌아가는 줄 몰랐음. 이제 이해됨"
 > - "MCP 기부는 영리한 수. 표준 선점하려는 전략"
