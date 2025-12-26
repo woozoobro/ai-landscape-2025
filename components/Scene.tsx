@@ -481,7 +481,7 @@ export default function Scene() {
         </button>
 
         {selectedNode && (
-          <div className="mt-20">
+          <div className="mt-2">
             <span
               className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-4 border border-white/10
                     ${
@@ -505,30 +505,6 @@ export default function Scene() {
             <p className="text-zinc-300 leading-relaxed text-lg border-l-2 border-white/20 pl-4">
               {selectedNode.description}
             </p>
-
-            {/* Importance indicator */}
-            <div className="mt-8 flex items-center gap-2">
-              <span className="text-xs uppercase tracking-widest text-zinc-600">
-                Importance
-              </span>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i <= selectedNode.importance
-                        ? selectedNode.company === "Anthropic"
-                          ? "bg-orange-400"
-                          : selectedNode.company === "OpenAI"
-                          ? "bg-green-400"
-                          : "bg-blue-400"
-                        : "bg-zinc-700"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
           </div>
         )}
       </div>
