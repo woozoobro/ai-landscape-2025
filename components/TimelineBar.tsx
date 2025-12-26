@@ -37,6 +37,7 @@ export default function TimelineBar({
       className={`fixed bottom-0 left-0 right-1/2 z-1000 transition-transform duration-3000 ease-[cubic-bezier(0.32,0.72,0,1)] ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
+      inert={!visible ? true : undefined}
     >
       {/* Content */}
       <div className="px-8 py-6">

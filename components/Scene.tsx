@@ -468,6 +468,7 @@ export default function Scene() {
         className={`absolute top-0 right-0 h-full w-full md:w-1/2 bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-2000 flex flex-col transition-transform duration-2400 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           selectedNode ? 'translate-x-0' : 'translate-x-full'
         }`}
+        inert={!selectedNode ? true : undefined}
       >
         <button
           onClick={() => {
