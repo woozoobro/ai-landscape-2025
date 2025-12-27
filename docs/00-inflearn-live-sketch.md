@@ -162,61 +162,73 @@ OpenAI는 '일상의 넓이'를,
 - [Operator 출시](https://openai.com/index/introducing-operator/)
   - 브라우저 제어 에이전트 최초 공개
   - Anthropic의 Computer Use에 대응하는 소비자용 자동화 도구
+  > 추가 필요
 
 ### 25.2월
 
 - [Deep Research 정식 출시](https://openai.com/index/introducing-deep-research/)
   - "보고서 써줘" 하면 혼자 30분동안 웹서핑하고 다양한 키워드들로 다양한 소스 분석후 보고서 작성
+  > 추가 필요
+
 - [GPT4.5 공개](https://openai.com/index/introducing-gpt-4-5/)
+  > 빼기
+
 
 ### 25.4월
-
 - [o-series 추론 모델 공개](https://openai.com/index/introducing-o3-and-o4-mini/)
+  > 추가 필요
+
 
 ### 25.5월
 
 - [io Porudcts 인수 발표](https://openai.com/sam-and-jony/)
   - Jony Ive가 설립한 하드웨어 스타트업 전격 인수
   - 스크린 없는 AI 디바이스 개발 공식화
+  > 추가 필요
+
 - [Codex Research Preview](https://openai.com/ko-KR/index/introducing-codex/)
+  > 추가 필요
 
 ### 25.7월
-
 - [Operator가 ChatGPT에 완전 통합](https://openai.com/ko-KR/index/introducing-chatgpt-agent/)
   - 별도 사이트 폐쇄, ChatGPT의 "Agent Mode"로 편입
   - "글쓰기(Chat)"와 "일하기(Agent)" 모드를 스위칭하는 UI 도입
+  > 추가 필요
 
 ### 25.8월
 
 - [GPT-5 출시](https://openai.com/ko-KR/index/introducing-gpt-5/)
+  > 추가 필요 + 예전에 gpt5는 agi가 될 것이다~
 
 - [Codex CLI 출시](https://developers.openai.com/codex/cli/)
+  > 추가 필요
 
 ### 25.9월
-
 - [Sora 2 출시](https://openai.com/index/sora-2/)
   - Sora iOS 앱 roll out, 틱톡 같은 SNS
+  > 추가 필요
 
 ### 25.10월
-
 - [챗GPT Atlas 브라우저 공개](https://openai.com/index/introducing-chatgpt-atlas/)
+  > 추가 필요
 
 ### 25.11월
-
 - [GPT-5.1](https://openai.com/index/gpt-5-1/)
+  > 추가하기
 
 ### 25.12월
-
 - [GPT-5.2](https://openai.com/index/introducing-gpt-5-2/)
+  > 추가
 
 - [Codex Skills 도입](https://developers.openai.com/codex/skills/)
-
   - Anthropic의 Skills 개념을 Codex CLI와 ChatGPT에 채택
   - `SKILL.md` 마크다운 파일로 에이전트에게 "전문 스킬" 장착
   - `~/.codex/skills` 폴더에 저장, `codex --enable skills`로 활성화
   - Anthropic이 만든 오픈 표준이 업계 표준으로 확산되는 신호
+  > 추가
 
 - [Disney x Sora 파트너십](https://openai.com/index/disney-sora-agreement/)
+  > 추가
 
 ### 25년 총평 및 인사이트
 
