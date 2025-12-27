@@ -462,7 +462,8 @@ export default function Scene() {
           camera={{ position: [0, 80, 180], fov: 50 }} // Start far away
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, toneMappingExposure: 1.2 }}
-          frameloop={activeView === "space" ? "always" : "never"}
+          // Keep always running to avoid render delay when switching views
+          // TODO: Optimize with frameloop="demand" + invalidate() for better perf
         >
           <color attach="background" args={["#030308"]} />
           <Suspense fallback={null}>
@@ -484,21 +485,13 @@ export default function Scene() {
             />
 
             <EffectComposer multisampling={0}>
-              {/* Core glow - bright parts */}
+              {/* Single balanced Bloom - merged for performance */}
               <Bloom
-                luminanceThreshold={0.6}
-                luminanceSmoothing={0.3}
+                luminanceThreshold={0.4}
+                luminanceSmoothing={0.5}
                 mipmapBlur
-                intensity={1.5}
-                radius={0.4}
-              />
-              {/* Wide glow - atmosphere */}
-              <Bloom
-                luminanceThreshold={0.3}
-                luminanceSmoothing={0.9}
-                mipmapBlur
-                intensity={0.4}
-                radius={0.9}
+                intensity={1.2}
+                radius={0.6}
               />
               {/* Vignette - focus attention */}
               <Vignette eskil={false} offset={0.2} darkness={0.6} />

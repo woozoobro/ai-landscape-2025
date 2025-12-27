@@ -544,22 +544,18 @@ function GraphNode({
         />
       </mesh>
 
-      {/* Label - render when visible and showLabel is true (zoom level optimization) */}
-      {labelVisible && showLabel && (
+      {/* Label - ONLY render for hovered/selected nodes (performance optimization) */}
+      {labelVisible && showLabel && (hovered || selected) && (
         <Html
           position={[0, baseSize + 0.8, 0]}
           center
           zIndexRange={[1000, 0]}
-          style={{
-            opacity: dimmed ? 0.25 : (selected || hovered ? 1 : 0.7),
-            transition: "opacity 0.3s ease-out",
-          }}
         >
           <div
             className="pointer-events-none select-none text-center whitespace-nowrap"
             style={{
               fontSize: "14px",
-              color: hovered || selected ? "#fff" : "#aaa",
+              color: "#fff",
               textShadow: `0 0 6px ${color}`,
               maxWidth: "160px",
               overflow: "hidden",
