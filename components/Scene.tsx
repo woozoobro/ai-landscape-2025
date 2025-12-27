@@ -318,6 +318,27 @@ export default function Scene() {
     setSelectedNode(presentation.sortedEvents[index]);
   }, [presentation]);
 
+  // Preload next media in Presentation Mode
+  useEffect(() => {
+    if (!presentation.active) return;
+
+    const nextIndex = presentation.currentIndex + 1;
+    if (nextIndex >= presentation.sortedEvents.length) return;
+
+    const nextEvent = presentation.sortedEvents[nextIndex];
+    if (!nextEvent.media) return;
+
+    // Preload image or video
+    if (nextEvent.media.type === "image") {
+      const img = new Image();
+      img.src = nextEvent.media.src;
+    } else {
+      const video = document.createElement("video");
+      video.preload = "auto";
+      video.src = nextEvent.media.src;
+    }
+  }, [presentation.active, presentation.currentIndex, presentation.sortedEvents]);
+
   // Keyboard navigation for Presentation Mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -513,12 +534,14 @@ export default function Scene() {
               <div className="mt-8 flex-1 min-h-0">
                 {selectedNode.media.type === "image" ? (
                   <img
+                    key={selectedNode.id}
                     src={selectedNode.media.src}
                     alt={selectedNode.label}
                     className="w-full h-auto object-contain rounded-lg"
                   />
                 ) : (
                   <video
+                    key={selectedNode.id}
                     src={selectedNode.media.src}
                     autoPlay
                     loop
