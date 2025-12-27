@@ -15,15 +15,15 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/KeywordsSlide"),
   },
   {
-    meta: { id: "anthropic-intro", title: "Anthropic", company: "Anthropic" },
+    meta: { id: "anthropic-intro", title: "Anthropic" },
     load: () => import("./content/AnthropicIntroSlide"),
   },
   {
-    meta: { id: "openai-intro", title: "OpenAI", company: "OpenAI" },
+    meta: { id: "openai-intro", title: "OpenAI" },
     load: () => import("./content/OpenAIIntroSlide"),
   },
   {
-    meta: { id: "google-intro", title: "Google", company: "Google" },
+    meta: { id: "google-intro", title: "Google" },
     load: () => import("./content/GoogleIntroSlide"),
   },
 ];

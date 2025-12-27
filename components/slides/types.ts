@@ -1,8 +1,5 @@
 import type { ComponentType } from "react";
 
-/** Company type (shared with events.ts) */
-export type Company = "Anthropic" | "OpenAI" | "Google";
-
 /** Props injected into every slide component */
 export interface SlideProps {
   /** Currently visible slide */
@@ -17,7 +14,6 @@ export interface SlideProps {
 export interface SlideMetadata {
   id: string;
   title?: string;
-  company?: Company;
 }
 
 /** Lazy-loadable slide definition */
