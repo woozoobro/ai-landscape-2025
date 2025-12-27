@@ -148,7 +148,7 @@ export const events: EventNode[] = [
   },
 
   // ============================================
-  // OpenAI (13개)
+  // OpenAI (13개) - GPT-4.5 삭제, Codex Skills 추가
   // ============================================
   {
     id: "o-operator",
@@ -156,7 +156,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-01",
     description: "브라우저 제어 에이전트 최초 공개. Computer Use 대응.",
-    importance: 4,
+    importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-operator/" },
+    ],
   },
   {
     id: "o-deep-research",
@@ -164,15 +167,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-02",
     description: "30분간 자율 웹서핑 후 보고서 작성. 다양한 소스 분석.",
-    importance: 3,
-  },
-  {
-    id: "o-gpt4.5",
-    label: "GPT-4.5",
-    company: "OpenAI",
-    date: "2025-02",
-    description: "GPT-4 계열 점진적 업그레이드.",
-    importance: 3,
+    importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-deep-research/" },
+    ],
   },
   {
     id: "o-oseries",
@@ -180,7 +178,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-04",
     description: "새로운 추론 모델 라인업 공개 (o3, o4-mini).",
-    importance: 4,
+    importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-o3-and-o4-mini/" },
+    ],
   },
   {
     id: "o-ioproducts",
@@ -188,7 +189,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-05",
     description: "Jony Ive 하드웨어 스타트업 인수. 스크린 없는 AI 디바이스 개발.",
-    importance: 4,
+    importance: 2,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/sam-and-jony/" },
+    ],
   },
   {
     id: "o-codex-preview",
@@ -196,7 +200,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-05",
     description: "새로운 코딩 모델 Research Preview.",
-    importance: 3,
+    importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-codex/" },
+    ],
   },
   {
     id: "o-operator-chatgpt",
@@ -204,7 +211,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-07",
     description: "Operator가 ChatGPT에 완전 통합. Agent Mode로 편입.",
-    importance: 3,
+    importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-chatgpt-agent/" },
+    ],
   },
   {
     id: "o-gpt5",
@@ -213,6 +223,9 @@ export const events: EventNode[] = [
     date: "2025-08",
     description: "차세대 플래그십 모델 출시.",
     importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-gpt-5/" },
+    ],
   },
   {
     id: "o-codex-cli",
@@ -220,7 +233,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-08",
     description: "커맨드라인 코딩 도구 출시.",
-    importance: 3,
+    importance: 4,
+    sources: [
+      { label: "개발자 문서", url: "https://developers.openai.com/codex/cli/" },
+    ],
   },
   {
     id: "o-sora2",
@@ -229,6 +245,9 @@ export const events: EventNode[] = [
     date: "2025-09",
     description: "비디오 생성 모델. iOS 앱으로 틱톡 같은 SNS 형태 출시.",
     importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/sora-2/" },
+    ],
   },
   {
     id: "o-atlas",
@@ -236,7 +255,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-10",
     description: "ChatGPT 전용 브라우저 공개.",
-    importance: 4,
+    importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-chatgpt-atlas/" },
+    ],
   },
   {
     id: "o-gpt5.1",
@@ -244,7 +266,10 @@ export const events: EventNode[] = [
     company: "OpenAI",
     date: "2025-11",
     description: "GPT-5 개선 버전.",
-    importance: 3,
+    importance: 2,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/gpt-5-1/" },
+    ],
   },
   {
     id: "o-gpt5.2",
@@ -253,6 +278,20 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "GPT-5 추가 개선.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/introducing-gpt-5-2/" },
+    ],
+  },
+  {
+    id: "o-codex-skills",
+    label: "Codex Skills",
+    company: "OpenAI",
+    date: "2025-12",
+    description: "Anthropic Skills 개념 채택. SKILL.md 파일로 에이전트에 전문 스킬 장착.",
+    importance: 5,
+    sources: [
+      { label: "개발자 문서", url: "https://developers.openai.com/codex/skills/" },
+    ],
   },
   {
     id: "o-disney",
@@ -261,6 +300,9 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "디즈니와 비디오 콘텐츠 파트너십 체결.",
     importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/index/disney-sora-agreement/" },
+    ],
   },
 
   // ============================================
