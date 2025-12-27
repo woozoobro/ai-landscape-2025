@@ -5,7 +5,7 @@ import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import SpaceGraph from "./SpaceGraph";
 import TimelineBar from "./TimelineBar";
 import SlidesView from "./slides/SlidesView";
-import { slides } from "@/app/data/slides";
+import { TOTAL_SLIDES } from "./slides/registry";
 import { CameraControls, Loader } from "@react-three/drei";
 
 import { EventNode, Company, events } from "@/app/data/events";
@@ -240,7 +240,7 @@ export default function Scene() {
 
   // Slide navigation functions
   const nextSlide = useCallback(() => {
-    setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
+    setSlideIndex((prev) => Math.min(prev + 1, TOTAL_SLIDES - 1));
   }, []);
 
   const prevSlide = useCallback(() => {

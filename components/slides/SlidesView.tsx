@@ -1,8 +1,11 @@
 "use client";
 
-import { slides } from "@/app/data/slides";
-import SlideRenderer from "./SlideRenderer";
+import { useState, useCallback, useMemo, Suspense, lazy, useRef } from "react";
+import { slideRegistry, TOTAL_SLIDES } from "./registry";
 import SlideProgress from "./SlideProgress";
+import SlideContainer from "./SlideContainer";
+import type { SlideProps } from "./types";
+import type { ComponentType } from "react";
 
 interface SlidesViewProps {
   visible: boolean;
@@ -10,34 +13,99 @@ interface SlidesViewProps {
   onNavigate: (index: number) => void;
 }
 
+/** Preload window: current slide +/- this many */
+const PRELOAD_WINDOW = 1;
+
 export default function SlidesView({
   visible,
   currentIndex,
   onNavigate,
 }: SlidesViewProps) {
-  const currentSlide = slides[currentIndex];
+  // Cache for loaded components
+  const loadedComponentsRef = useRef<Map<number, ComponentType<SlideProps>>>(
+    new Map()
+  );
 
-  if (!currentSlide) return null;
+  // Track previous index for direction
+  const prevIndexRef = useRef(currentIndex);
+  const direction: "forward" | "backward" =
+    currentIndex >= prevIndexRef.current ? "forward" : "backward";
+  prevIndexRef.current = currentIndex;
+
+  // Determine which slides should be mounted
+  const mountedIndices = useMemo(() => {
+    const indices = new Set<number>();
+    for (
+      let i = Math.max(0, currentIndex - PRELOAD_WINDOW);
+      i <= Math.min(TOTAL_SLIDES - 1, currentIndex + PRELOAD_WINDOW);
+      i++
+    ) {
+      indices.add(i);
+    }
+    return indices;
+  }, [currentIndex]);
+
+  // Lazy load slide component with caching
+  const getSlideComponent = useCallback((index: number) => {
+    const cached = loadedComponentsRef.current.get(index);
+    if (cached) {
+      return cached;
+    }
+
+    const LazyComponent = lazy(async () => {
+      const module = await slideRegistry[index].load();
+      loadedComponentsRef.current.set(index, module.default);
+      return module;
+    });
+
+    return LazyComponent;
+  }, []);
 
   return (
     <div
-      className={`fixed inset-0 bg-black flex flex-col transition-opacity duration-300 ${
+      className={`fixed inset-0 bg-black flex flex-col transition-opacity duration-300 z-[1000] ${
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
-      {/* 메인 슬라이드 영역 */}
-      <div className="flex-1 flex items-center justify-center p-8 md:p-16">
-        <SlideRenderer slide={currentSlide} />
+      {/* Slide viewport */}
+      <div className="flex-1 relative overflow-hidden">
+        {visible && Array.from(mountedIndices).map((index) => {
+          const SlideComponent = getSlideComponent(index);
+          const isActive = index === currentIndex;
+          const isAdjacent = !isActive;
+
+          return (
+            <SlideContainer
+              key={slideRegistry[index].meta.id}
+              index={index}
+              currentIndex={currentIndex}
+            >
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+                  </div>
+                }
+              >
+                <SlideComponent
+                  isActive={isActive}
+                  isAdjacent={isAdjacent}
+                  direction={direction}
+                />
+              </Suspense>
+            </SlideContainer>
+          );
+        })}
       </div>
 
-      {/* 하단 진행률 표시 */}
+      {/* Progress indicator */}
       <SlideProgress
         current={currentIndex}
-        total={slides.length}
+        total={TOTAL_SLIDES}
         onNavigate={onNavigate}
       />
 
-      {/* 키보드 힌트 */}
+      {/* Keyboard hints */}
       <div className="fixed bottom-6 left-6 text-zinc-600 text-xs font-mono flex items-center gap-4">
         <span>
           <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400">
@@ -56,9 +124,9 @@ export default function SlidesView({
         </span>
       </div>
 
-      {/* 슬라이드 번호 */}
+      {/* Slide counter */}
       <div className="fixed top-6 right-6 text-zinc-500 text-sm font-mono">
-        {currentIndex + 1} / {slides.length}
+        {currentIndex + 1} / {TOTAL_SLIDES}
       </div>
     </div>
   );
