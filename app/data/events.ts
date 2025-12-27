@@ -157,6 +157,10 @@ export const events: EventNode[] = [
     date: "2025-01",
     description: "브라우저 제어 에이전트 최초 공개. Computer Use 대응.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/openai-operator.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-operator/" },
     ],
@@ -168,30 +172,12 @@ export const events: EventNode[] = [
     date: "2025-02",
     description: "30분간 자율 웹서핑 후 보고서 작성. 다양한 소스 분석.",
     importance: 4,
+    media: {
+      type: "image",
+      src: "/openai-deep-research.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-deep-research/" },
-    ],
-  },
-  {
-    id: "o-oseries",
-    label: "o-series",
-    company: "OpenAI",
-    date: "2025-04",
-    description: "새로운 추론 모델 라인업 공개 (o3, o4-mini).",
-    importance: 3,
-    sources: [
-      { label: "공식 발표", url: "https://openai.com/index/introducing-o3-and-o4-mini/" },
-    ],
-  },
-  {
-    id: "o-ioproducts",
-    label: "io Products",
-    company: "OpenAI",
-    date: "2025-05",
-    description: "Jony Ive 하드웨어 스타트업 인수. AI 디바이스 개발 하겠다!",
-    importance: 2,
-    sources: [
-      { label: "공식 발표", url: "https://openai.com/sam-and-jony/" },
     ],
   },
   {
@@ -201,6 +187,10 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "새로운 코딩 모델 Research Preview.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/openai-codex.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-codex/" },
     ],
@@ -210,8 +200,12 @@ export const events: EventNode[] = [
     label: "Operator → ChatGPT",
     company: "OpenAI",
     date: "2025-07",
-    description: "Operator가 ChatGPT에 완전 통합. Agent Mode로 편입.",
+    description: "Operator가 ChatGPT에 완전 통합. Agent로 편입.",
     importance: 5,
+    media: {
+      type: "mp4",
+      src: "/chatgpt-agents.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-chatgpt-agent/" },
     ],
@@ -223,6 +217,10 @@ export const events: EventNode[] = [
     date: "2025-08",
     description: "차세대 플래그십 모델 출시.",
     importance: 5,
+    media: {
+      type: "mp4",
+      src: "/chatgpt5.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-gpt-5/" },
     ],
@@ -234,6 +232,10 @@ export const events: EventNode[] = [
     date: "2025-08",
     description: "커맨드라인 코딩 도구 출시.",
     importance: 4,
+    media: {
+      type: "image",
+      src: "/codex-cli.png",
+    },
     sources: [
       { label: "개발자 문서", url: "https://developers.openai.com/codex/cli/" },
     ],
@@ -243,8 +245,12 @@ export const events: EventNode[] = [
     label: "Sora 2",
     company: "OpenAI",
     date: "2025-09",
-    description: "비디오 생성 모델. iOS 앱으로 틱톡 같은 SNS 형태 출시.",
+    description: "비디오 생성 모델과 함께 iOS 앱으로 틱톡 같은 SNS 형태 출시.",
     importance: 4,
+    media: {
+      type: "mp4",
+      src: "/sora-app.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/sora-2/" },
     ],
@@ -256,6 +262,10 @@ export const events: EventNode[] = [
     date: "2025-10",
     description: "ChatGPT 전용 브라우저 공개.",
     importance: 5,
+    media: {
+      type: "mp4",
+      src: "/chatgpt-atlas.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-chatgpt-atlas/" },
     ],
@@ -267,6 +277,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "GPT-5 개선 버전.",
     importance: 2,
+    media: {
+      type: "image",
+      src: "/sam-google.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/gpt-5-1/" },
     ],
@@ -278,6 +292,10 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "GPT-5 추가 개선.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/openai-codered.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/introducing-gpt-5-2/" },
     ],
@@ -289,6 +307,10 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "에이전트 명세 AGENTS.md를 리눅스 재단(AAIF)에 기증. Anthropic MCP 기증에 대응.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/openai-aaif.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/ko-KR/index/agentic-ai-foundation/" },
     ],
