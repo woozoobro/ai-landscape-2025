@@ -28,7 +28,11 @@ export const events: EventNode[] = [
     company: "Anthropic",
     date: "2025-02",
     description: "터미널 기반 에이전틱 코딩 도구. 파일 읽기/수정, 명령어 실행 가능. IDE가 아닌 CLI로 출시한 게 영리했음.",
-    importance: 3,
+    importance: 5,
+    media: {
+      type: "image",
+      src: "/claude-code-preview.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://www.anthropic.com/news/claude-3-7-sonnet" },
     ],
