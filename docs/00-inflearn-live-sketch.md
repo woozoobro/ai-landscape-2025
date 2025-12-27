@@ -94,10 +94,6 @@ OpenAI는 '일상의 넓이'를,
   - 터미널 없이 브라우저에서 코딩 에이전트 사용
   - 여러 작업을 동시에 돌려놓고 모니터링 가능
 
-- **Claude Code 연간 매출 $10억 달성** (5월 정식 출시 후 6개월 만)
-
-  - Netflix, Spotify, KPMG, 로레알 등 글로벌 기업들이 사용 중
-
 - [Claude Opus 4.5 출시](https://www.anthropic.com/news/claude-opus-4-5)
   - "세계 최고의 코딩·에이전트·컴퓨터 사용 모델" - Anthropic
   - 코딩 벤치마크(SWE-bench) **최초 80% 돌파** (80.9%)
@@ -120,6 +116,10 @@ OpenAI는 '일상의 넓이'를,
   - Claude Code가 Bun 위에서 돌아감 → 핵심 인프라 내재화
   - 오픈소스(MIT 라이선스) 유지 약속
   > 빼기
+
+- **Claude Code 연간 매출 $10억 달성** (5월 정식 출시 후 6개월 만)
+
+  - Netflix, Spotify, KPMG, 로레알 등 글로벌 기업들이 사용 중
 
 - [Claude Code in Slack](https://claude.com/blog/claude-code-and-slack)
   - Slack 채팅에서 바로 코딩 작업 지시 가능
