@@ -515,7 +515,7 @@ export default function Scene() {
                   <img
                     src={selectedNode.media.src}
                     alt={selectedNode.label}
-                    className="w-full h-auto max-h-[300px] object-contain rounded-lg"
+                    className="w-full h-auto object-contain rounded-lg"
                   />
                 ) : (
                   <video
@@ -524,7 +524,7 @@ export default function Scene() {
                     loop
                     muted
                     playsInline
-                    className="w-full h-auto max-h-[300px] object-contain rounded-lg"
+                    className="w-full h-auto object-contain rounded-lg"
                   />
                 )}
               </div>

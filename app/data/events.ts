@@ -60,6 +60,10 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "IDE 플러그인(VS Code, JetBrains), GitHub 통합, SDK 공개. 개발자가 직접 에이전트 구축 가능.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/claude-code-demo.gif",
+    },
     sources: [
       { label: "Claude 4 발표", url: "https://www.anthropic.com/news/claude-4" },
     ],
