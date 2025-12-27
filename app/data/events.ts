@@ -8,6 +8,14 @@ export interface EventNode {
   description: string;
   importance: 1 | 2 | 3 | 4 | 5; // 1=minor, 5=major milestone
   position?: [number, number, number]; // To be calculated or preset
+  media?: {
+    type: "image" | "webm";
+    src: string; // /media/filename.webm or /media/filename.png
+  };
+  sources?: Array<{
+    label?: string; // "공식 발표", "문서" 등 (없으면 URL만 표시)
+    url: string;
+  }>;
 }
 
 export const events: EventNode[] = [
@@ -21,6 +29,9 @@ export const events: EventNode[] = [
     date: "2025-02",
     description: "터미널 기반 에이전틱 코딩 도구. 파일 읽기/수정, 명령어 실행 가능. IDE가 아닌 CLI로 출시한 게 영리했음.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://www.anthropic.com/news/claude-3-7-sonnet" },
+    ],
   },
   {
     id: "a-mcp-openai",
@@ -29,6 +40,10 @@ export const events: EventNode[] = [
     date: "2025-03",
     description: "OpenAI가 MCP 공식 채택. ChatGPT 데스크톱 앱, Agents SDK에 적용. 웹 검색 기능도 함께 출시.",
     importance: 3,
+    sources: [
+      { label: "OpenAI MCP 문서", url: "https://openai.github.io/openai-agents-python/mcp/" },
+      { label: "웹 검색 출시", url: "https://claude.com/blog/web-search" },
+    ],
   },
   {
     id: "a-code-release",
@@ -37,14 +52,20 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "IDE 플러그인(VS Code, JetBrains), GitHub 통합, SDK 공개. 개발자가 직접 에이전트 구축 가능.",
     importance: 5,
+    sources: [
+      { label: "Claude 4 발표", url: "https://www.anthropic.com/news/claude-4" },
+    ],
   },
   {
     id: "a-chrome",
     label: "Claude for Chrome",
     company: "Anthropic",
     date: "2025-08",
-    description: "크롬 브라우저 AI 비서 Research Preview. 캘린더, 이메일, 파일 관리 자동화. Max 구독자 1,000명 한정 테스트.",
+    description: "크롬 확장 프로그램 Research Preview. 캘린더, 이메일, 파일 관리 자동화. Max 구독자 1,000명 한정 테스트.",
     importance: 5,
+    sources: [
+      { label: "공식 블로그", url: "https://claude.com/blog/claude-for-chrome" },
+    ],
   },
   {
     id: "a-files",
@@ -53,6 +74,9 @@ export const events: EventNode[] = [
     date: "2025-09",
     description: "Excel, Word, PPT, PDF를 AI가 직접 생성. 수식 포함된 재무 모델도 가능.",
     importance: 3,
+    sources: [
+      { label: "공식 블로그", url: "https://claude.com/blog/create-files" },
+    ],
   },
   {
     id: "a-skills",
@@ -61,22 +85,34 @@ export const events: EventNode[] = [
     date: "2025-10",
     description: "Claude에게 전문 스킬 장착. 엑셀 전문가, 브랜드 가이드라인 등 필요할 때만 불러서 사용.",
     importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://www.anthropic.com/news/skills" },
+    ],
   },
   {
-    id: "a-code-1b",
-    label: "Claude Code $10억",
+    id: "a-excel",
+    label: "Claude in Excel",
     company: "Anthropic",
     date: "2025-11",
-    description: "정식 출시 6개월 만에 연간 매출 $10억 달성. 웹 버전 출시, Excel 베타. Netflix, Spotify, KPMG 등 사용.",
+    description: "Microsoft Excel에 Claude가 빌트인. 스프레드시트 작업을 자연어로 처리.",
     importance: 3,
+    sources: [
+      { label: "Claude in Excel", url: "https://www.claude.com/claude-in-excel" },
+    ],
   },
   {
     id: "a-chrome-mcp",
     label: "Chrome 정식 & MCP 표준화",
     company: "Anthropic",
     date: "2025-12",
-    description: "Claude for Chrome 모든 유료 구독자 확대. MCP를 재단에 기부하여 업계 오픈 표준화. Slack 통합도 추가.",
+    description: "Claude for Chrome 모든 유료 구독자 확대. MCP를 재단에 기부하여 업계 오픈 표준화. Slack 통합, Bun 인수. Claude Code 매출 $10억 달성.",
     importance: 5,
+    sources: [
+      { label: "Chrome 정식", url: "https://www.anthropic.com/news/claude-for-chrome" },
+      { label: "Slack 통합", url: "https://claude.com/blog/claude-code-and-slack" },
+      { label: "Bun 인수", url: "https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone" },
+      { label: "MCP 재단 기부", url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" },
+    ],
   },
 
   // ============================================

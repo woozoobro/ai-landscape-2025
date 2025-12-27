@@ -481,30 +481,71 @@ export default function Scene() {
         </button>
 
         {selectedNode && (
-          <div className="mt-2">
-            <span
-              className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-4 border border-white/10
-                    ${
-                      selectedNode.company === "Anthropic"
-                        ? "text-orange-400 bg-orange-400/10"
-                        : selectedNode.company === "OpenAI"
-                        ? "text-green-400 bg-green-400/10"
-                        : "text-blue-400 bg-blue-400/10"
-                    }`}
-            >
-              {selectedNode.company}
-            </span>
+          <div className="mt-2 flex flex-col h-full">
+            <div>
+              <span
+                className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-4 border border-white/10
+                      ${
+                        selectedNode.company === "Anthropic"
+                          ? "text-orange-400 bg-orange-400/10"
+                          : selectedNode.company === "OpenAI"
+                          ? "text-green-400 bg-green-400/10"
+                          : "text-blue-400 bg-blue-400/10"
+                      }`}
+              >
+                {selectedNode.company}
+              </span>
 
-            <h2 className="text-4xl font-bold text-white mb-2 leading-tight">
-              {selectedNode.label}
-            </h2>
-            <div className="text-zinc-500 font-mono mb-8 text-lg">
-              {selectedNode.date}
+              <h2 className="text-4xl font-bold text-white mb-2 leading-tight">
+                {selectedNode.label}
+              </h2>
+              <div className="text-zinc-500 font-mono mb-8 text-lg">
+                {selectedNode.date}
+              </div>
+
+              <p className="text-zinc-300 leading-relaxed text-lg border-l-2 border-white/20 pl-4">
+                {selectedNode.description}
+              </p>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed text-lg border-l-2 border-white/20 pl-4">
-              {selectedNode.description}
-            </p>
+            {/* Media 영역 */}
+            {selectedNode.media && (
+              <div className="mt-8 flex-1 min-h-0">
+                {selectedNode.media.type === "image" ? (
+                  <img
+                    src={selectedNode.media.src}
+                    alt={selectedNode.label}
+                    className="w-full h-auto max-h-[300px] object-contain rounded-lg"
+                  />
+                ) : (
+                  <video
+                    src={selectedNode.media.src}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-auto max-h-[300px] object-contain rounded-lg"
+                  />
+                )}
+              </div>
+            )}
+
+            {/* 하단 출처 링크들 */}
+            {selectedNode.sources && selectedNode.sources.length > 0 && (
+              <div className="mt-auto pt-6 border-t border-white/5 flex flex-wrap gap-3">
+                {selectedNode.sources.map((source, idx) => (
+                  <a
+                    key={idx}
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-zinc-500 text-sm hover:text-zinc-300 transition-colors"
+                  >
+                    📎 {source.label || new URL(source.url).hostname}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
