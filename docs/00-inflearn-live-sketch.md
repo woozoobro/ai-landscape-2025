@@ -292,7 +292,6 @@ OpenAI는 '일상의 넓이'를,
 - [Generative UI](https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/)
 
 ### 25.12월
-
 - [Gen Tabs](https://labs.google/disco)
 
 ### 25년 총평 및 인사이트

@@ -356,6 +356,9 @@ export const events: EventNode[] = [
     date: "2025-02",
     description: "Gemini 2.0 Pro & Flash-Lite 공개.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/" },
+    ],
   },
   {
     id: "g-gemini2.5",
@@ -364,6 +367,9 @@ export const events: EventNode[] = [
     date: "2025-03",
     description: "Experimental thinking 기능 업데이트.",
     importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/" },
+    ],
   },
   {
     id: "g-notebook-audio",
@@ -372,6 +378,9 @@ export const events: EventNode[] = [
     date: "2025-04",
     description: "Audio Overviews 50개 언어로 확대.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/google-labs/notebooklm-audio-overviews-50-languages/" },
+    ],
   },
   {
     id: "g-io2025",
@@ -380,6 +389,20 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "Veo 3 (네이티브 오디오 비디오), Imagen 4 발표.",
     importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/ai/io-2025-keynote/" },
+    ],
+  },
+  {
+    id: "g-ai-studio",
+    label: "Google AI Studio",
+    company: "Google",
+    date: "2025-05",
+    description: "API 테스트 플레이그라운드에서 자연어로 웹앱까지 만들 수 있는 빌더로 진화.",
+    importance: 3,
+    sources: [
+      { label: "AI Studio", url: "https://aistudio.google.com/" },
+    ],
   },
   {
     id: "g-gemini-cli",
@@ -388,6 +411,9 @@ export const events: EventNode[] = [
     date: "2025-06",
     description: "오픈소스 AI 에이전트 CLI 도구.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/developers/introducing-gemini-cli-open-source-ai-agent/" },
+    ],
   },
   {
     id: "g-nano-banana",
@@ -396,14 +422,20 @@ export const events: EventNode[] = [
     date: "2025-08",
     description: "온디바이스 이미지 편집 모델.",
     importance: 2,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/products/gemini/updated-image-editing-model/" },
+    ],
   },
   {
     id: "g-notebook-video",
     label: "NotebookLM Video",
     company: "Google",
-    date: "2025-08",
-    description: "Video Overviews 기능 추가.",
-    importance: 2,
+    date: "2025-07",
+    description: "Video Overviews 기능 추가. 문서를 넣으면 강의 영상 생성.",
+    importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://workspaceupdates.googleblog.com/2025/07/video-overviews-studio-panel-updates-notebooklm.html" },
+    ],
   },
   {
     id: "g-veo3.1",
@@ -412,6 +444,9 @@ export const events: EventNode[] = [
     date: "2025-10",
     description: "Image Bridging, scene extension 기능 추가.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/ai/veo-updates-flow/" },
+    ],
   },
   {
     id: "g-gemini3",
@@ -420,6 +455,9 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "Deep Think 탑재. LMArena 1500점 돌파로 1위 탈환.",
     importance: 5,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/products/gemini/gemini-3/" },
+    ],
   },
   {
     id: "g-antigravity",
@@ -428,6 +466,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "VS Code 포크 기반 agent-first IDE. 구글 클라우드 락인.",
     importance: 4,
+    sources: [
+      { label: "공식 발표", url: "https://antigravity.google/blog/introducing-google-antigravity" },
+      { label: "Antigravity MCP", url: "https://cloud.google.com/blog/u/1/products/data-analytics/connect-google-antigravity-ide-to-googles-data-cloud-services?hl=en" },
+    ],
   },
   {
     id: "g-nano-pro",
@@ -436,6 +478,9 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "온디바이스 이미지 편집 모델 업그레이드.",
     importance: 2,
+    sources: [
+      { label: "공식 발표", url: "https://blog.google/technology/ai/nano-banana-pro/" },
+    ],
   },
   {
     id: "g-genui",
@@ -444,6 +489,9 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "프롬프트로 커스텀 UI 자동 생성.",
     importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/" },
+    ],
   },
   {
     id: "g-gentabs",
@@ -452,5 +500,8 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "Generative UI 실험 프로젝트.",
     importance: 2,
+    sources: [
+      { label: "공식 발표", url: "https://labs.google/disco" },
+    ],
   },
 ];
