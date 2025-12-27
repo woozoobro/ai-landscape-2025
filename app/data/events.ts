@@ -356,6 +356,10 @@ export const events: EventNode[] = [
     date: "2025-02",
     description: "Gemini 2.0 Pro & Flash-Lite 공개.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/gemini-2.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/" },
     ],
@@ -367,6 +371,10 @@ export const events: EventNode[] = [
     date: "2025-03",
     description: "Experimental thinking 기능 업데이트.",
     importance: 4,
+    media: {
+      type: "image",
+      src: "/gemini-2-5.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/" },
     ],
@@ -378,6 +386,10 @@ export const events: EventNode[] = [
     date: "2025-04",
     description: "Audio Overviews 50개 언어로 확대.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/notebooklm-audio.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/google-labs/notebooklm-audio-overviews-50-languages/" },
     ],
@@ -389,6 +401,10 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "Veo 3 (네이티브 오디오 비디오), Imagen 4 발표.",
     importance: 4,
+    media: {
+      type: "webm",
+      src: "/veo3.webm",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/ai/io-2025-keynote/" },
     ],
