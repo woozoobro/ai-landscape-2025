@@ -369,7 +369,7 @@ export const events: EventNode[] = [
     label: "Gemini 2.5",
     company: "Google",
     date: "2025-03",
-    description: "Experimental thinking 기능 업데이트.",
+    description: "Thinking Model 첫 공개. 추론 후 응답하는 방식으로 LMArena 1위 데뷔.",
     importance: 4,
     media: {
       type: "image",
@@ -459,12 +459,17 @@ export const events: EventNode[] = [
     label: "Nano Banana",
     company: "Google",
     date: "2025-08",
-    description: "온디바이스 이미지 편집 모델.",
+    description: "Gemini 2.5 Flash Image 기반 이미지 생성/편집 모델. 대화형 멀티턴 편집 지원.",
     importance: 2,
+    media: {
+      type: "image",
+      src: "/nano-banana.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/products/gemini/updated-image-editing-model/" },
+      { label: "예시 모음", url: "https://blog.google/products/gemini/gemini-nano-banana-examples/" },
     ],
-  },  
+  },
   {
     id: "g-veo3.1",
     label: "Veo 3.1",
@@ -472,6 +477,10 @@ export const events: EventNode[] = [
     date: "2025-10",
     description: "Image Bridging, scene extension 기능 추가.",
     importance: 3,
+    media: {
+      type: "mp4",
+      src: "/veo-3-1.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/ai/veo-updates-flow/" },
     ],
@@ -483,6 +492,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "Deep Think 탑재. LMArena 1500점 돌파로 1위 탈환.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/gemini3.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/products/gemini/gemini-3/" },
     ],
@@ -494,6 +507,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "VS Code 포크 기반 agent-first IDE. 구글 클라우드 락인.",
     importance: 4,
+    media: {
+      type: "mp4",
+      src: "/antigravity.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://antigravity.google/blog/introducing-google-antigravity" },
       { label: "Antigravity MCP", url: "https://cloud.google.com/blog/u/1/products/data-analytics/connect-google-antigravity-ide-to-googles-data-cloud-services?hl=en" },
@@ -504,10 +521,15 @@ export const events: EventNode[] = [
     label: "Nano Banana Pro",
     company: "Google",
     date: "2025-11",
-    description: "온디바이스 이미지 편집 모델 업그레이드.",
-    importance: 2,
+    description: "Gemini 3 Pro 기반. 4K 해상도, 정확한 텍스트 렌더링, 캐릭터 일관성 유지.",
+    importance: 5,
+    media: {
+      type: "image",
+      src: "/nano-banana-pro.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/ai/nano-banana-pro/" },
+      { label: "DeepMind", url: "https://deepmind.google/models/gemini-image/pro/" },
     ],
   },
   {
@@ -517,6 +539,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "프롬프트로 커스텀 UI 자동 생성.",
     importance: 3,
+    media: {
+      type: "mp4",
+      src: "/generative-ui.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/" },
     ],
@@ -528,6 +554,10 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "Generative UI 실험 프로젝트.",
     importance: 2,
+    media: {
+      type: "mp4",
+      src: "/gen-tabs.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://labs.google/disco" },
     ],
