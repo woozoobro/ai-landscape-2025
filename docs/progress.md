@@ -2,7 +2,7 @@
 
 - [ ] 타임라인뷰 구현 어떻게 할지 (한번 쫙 정리된 내용 필요할듯)
 
-> 마지막 업데이트: 2025-12-21
+> 마지막 업데이트: 2025-12-28
 
 ## 프로젝트 개요
 
@@ -115,13 +115,21 @@ interface EventNode {
   date: string;           // "2025-MM" 형식
   description: string;
   importance: 1 | 2 | 3 | 4 | 5;
+  media?: {
+    type: "image" | "webm" | "mp4";
+    src: string;          // "/filename.webm" 또는 "/filename.png"
+  };
+  sources?: Array<{
+    label?: string;       // "공식 발표", "문서" 등
+    url: string;
+  }>;
 }
 ```
 
-- **Anthropic**: 17개 이벤트
-- **OpenAI**: 14개 이벤트
-- **Google**: 13개 이벤트
-- **총 44개 이벤트**
+- **Anthropic**: 8개 이벤트
+- **OpenAI**: 13개 이벤트
+- **Google**: 14개 이벤트
+- **총 35개 이벤트**
 
 ---
 
@@ -141,6 +149,18 @@ interface EventNode {
 - [ ] 사운드 효과
 - [ ] 가이드 투어 모드
 - [ ] 모바일 최적화
+
+### 완료된 개선 사항 (2025-12-28)
+- [x] **상세 패널 미디어 표시**
+  - 이벤트에 media 필드가 있으면 이미지/비디오 렌더링
+  - 지원 형식: image, webm, mp4
+- [x] **비디오 음소거 토글**
+  - 비디오 우측 하단에 토글 버튼 추가
+  - 기본값 muted (자동재생 호환), 클릭 시 소리 켜기/끄기
+- [x] **이벤트 데이터 보강**
+  - sources 필드: 공식 발표, 문서 등 출처 링크
+  - media 필드: 이미지/비디오 미디어 첨부
+  - Google 이벤트 14개로 확장 (AI Studio 추가)
 
 ### 완료된 개선 사항 (2025-12-21)
 - [x] **Presentation Mode 구현**
