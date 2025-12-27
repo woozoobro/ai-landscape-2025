@@ -148,7 +148,7 @@ export const events: EventNode[] = [
   },
 
   // ============================================
-  // OpenAI (13개) - GPT-4.5 삭제, Codex Skills 추가
+  // OpenAI (14개)
   // ============================================
   {
     id: "o-operator",
@@ -188,7 +188,7 @@ export const events: EventNode[] = [
     label: "io Products",
     company: "OpenAI",
     date: "2025-05",
-    description: "Jony Ive 하드웨어 스타트업 인수. 스크린 없는 AI 디바이스 개발.",
+    description: "Jony Ive 하드웨어 스타트업 인수. AI 디바이스 개발 하겠다!",
     importance: 2,
     sources: [
       { label: "공식 발표", url: "https://openai.com/sam-and-jony/" },
@@ -283,6 +283,17 @@ export const events: EventNode[] = [
     ],
   },
   {
+    id: "o-agents-md",
+    label: "AGENTS.md 표준화",
+    company: "OpenAI",
+    date: "2025-12",
+    description: "에이전트 명세 AGENTS.md를 리눅스 재단(AAIF)에 기증. Anthropic MCP 기증에 대응.",
+    importance: 3,
+    sources: [
+      { label: "공식 발표", url: "https://openai.com/ko-KR/index/agentic-ai-foundation/" },
+    ],
+  },
+  {
     id: "o-codex-skills",
     label: "Codex Skills",
     company: "OpenAI",
@@ -292,7 +303,7 @@ export const events: EventNode[] = [
     sources: [
       { label: "개발자 문서", url: "https://developers.openai.com/codex/skills/" },
     ],
-  },
+  },  
   {
     id: "o-disney",
     label: "Disney x Sora",
