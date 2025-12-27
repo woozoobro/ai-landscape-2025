@@ -9,7 +9,7 @@ export interface EventNode {
   importance: 1 | 2 | 3 | 4 | 5; // 1=minor, 5=major milestone
   position?: [number, number, number]; // To be calculated or preset
   media?: {
-    type: "image" | "webm";
+    type: "image" | "webm" | "mp4";
     src: string; // /media/filename.webm or /media/filename.png
   };
   sources?: Array<{
@@ -75,6 +75,10 @@ export const events: EventNode[] = [
     date: "2025-08",
     description: "크롬 확장 프로그램 Research Preview. 캘린더, 이메일, 파일 관리 자동화. Max 구독자 1,000명 한정 테스트.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/beta-claude-chrome.png",
+    },
     sources: [
       { label: "공식 블로그", url: "https://claude.com/blog/claude-for-chrome" },
     ],
@@ -86,6 +90,10 @@ export const events: EventNode[] = [
     date: "2025-09",
     description: "Excel, Word, PPT, PDF를 AI가 직접 생성. 수식 포함된 재무 모델도 가능.",
     importance: 3,
+    media: {
+      type: "mp4",
+      src: "/claude-file-creation.mp4",
+    },
     sources: [
       { label: "공식 블로그", url: "https://claude.com/blog/create-files" },
     ],
@@ -97,6 +105,10 @@ export const events: EventNode[] = [
     date: "2025-10",
     description: "Claude에게 전문 스킬 장착. 엑셀 전문가, 브랜드 가이드라인 등 필요할 때만 불러서 사용.",
     importance: 5,
+    media: {
+      type: "mp4",
+      src: "/claude-skills.mp4",
+    },
     sources: [
       { label: "공식 발표", url: "https://www.anthropic.com/news/skills" },
     ],
@@ -108,6 +120,10 @@ export const events: EventNode[] = [
     date: "2025-11",
     description: "Microsoft Excel에 Claude가 빌트인. 스프레드시트 작업을 자연어로 처리.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/claude-in-excel.png",
+    },
     sources: [
       { label: "Claude in Excel", url: "https://www.claude.com/claude-in-excel" },
     ],
@@ -119,10 +135,14 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "Claude Code 매출 약 1조원 달성. Slack 통합. Claude for Chrome 모든 유료 구독자 확대. MCP를 재단에 기부하여 업계 오픈 표준화. Bun 인수.",
     importance: 5,
+    media: {
+      type: "mp4",
+      src: "/claude-in-chrome-official.mp4",
+    },
     sources: [
       { label: "Claude Code $1B", url: "https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone" },
       { label: "Slack 통합", url: "https://claude.com/blog/claude-code-and-slack" },
-      { label: "Chrome 정식", url: "https://www.anthropic.com/news/claude-for-chrome" },      
+      { label: "Chrome 정식", url: "https://www.anthropic.com/news/claude-for-chrome" },
       { label: "MCP 재단 기부", url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" },
     ],
   },
