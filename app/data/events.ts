@@ -322,6 +322,10 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "Anthropic Skills 개념 채택. SKILL.md 파일로 에이전트에 전문 스킬 장착.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/openai-skills.png",
+    },
     sources: [
       { label: "개발자 문서", url: "https://developers.openai.com/codex/skills/" },
     ],
@@ -333,6 +337,10 @@ export const events: EventNode[] = [
     date: "2025-12",
     description: "디즈니와 비디오 콘텐츠 파트너십 체결.",
     importance: 4,
+    media: {
+      type: "image",
+      src: "/openai-disney.webp",
+    },
     sources: [
       { label: "공식 발표", url: "https://openai.com/index/disney-sora-agreement/" },
     ],
