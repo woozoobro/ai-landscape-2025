@@ -485,13 +485,13 @@ export default function Scene() {
             />
 
             <EffectComposer multisampling={0}>
-              {/* Single balanced Bloom - merged for performance */}
+              {/* Single Bloom - tuned to mimic dual-layer glow */}
               <Bloom
-                luminanceThreshold={0.4}
-                luminanceSmoothing={0.5}
+                luminanceThreshold={0.3}
+                luminanceSmoothing={0.6}
                 mipmapBlur
-                intensity={1.2}
-                radius={0.6}
+                intensity={1.4}
+                radius={0.65}
               />
               {/* Vignette - focus attention */}
               <Vignette eskil={false} offset={0.2} darkness={0.6} />
