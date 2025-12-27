@@ -305,7 +305,7 @@ export const events: EventNode[] = [
     label: "AGENTS.md 표준화",
     company: "OpenAI",
     date: "2025-12",
-    description: "에이전트 명세 AGENTS.md를 리눅스 재단(AAIF)에 기증. Anthropic MCP 기증에 대응.",
+    description: "에이전트 명세 AGENTS.md를 리눅스 재단(AAIF)에 기증.",
     importance: 3,
     media: {
       type: "image",

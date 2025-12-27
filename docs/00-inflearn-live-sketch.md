@@ -271,19 +271,23 @@ OpenAI는 '일상의 넓이'를,
 
 - [Gemini CLI](https://blog.google/technology/developers/introducing-gemini-cli-open-source-ai-agent/)
 
+### 25.7월
+- [NotebookLM Video Overviews](https://workspaceupdates.googleblog.com/2025/07/video-overviews-studio-panel-updates-notebooklm.html)
+
 ### 25.8월
 
 - [Nano Banana](https://blog.google/products/gemini/updated-image-editing-model/)
-- NotebookLM Video Overviews
+
 
 ### 25.10월
 
-- [Veo 3.1](https://gemini.google/kr/overview/video-generation/?hl=ko): Image Bridging, scene extension
+- [Veo 3.1](https://blog.google/technology/ai/veo-updates-flow/)
 
 ### 25.11월
 
 - [Gemini 3.0 Pro + Deep Think](https://blog.google/products/gemini/gemini-3/)
 - [Google Antigravity IDE](https://antigravity.google/blog/introducing-google-antigravity): VS Code 포크 기반, agent-first IDE
+  - [Antigravity MCP](https://cloud.google.com/blog/u/1/products/data-analytics/connect-google-antigravity-ide-to-googles-data-cloud-services?hl=en)
 - [Nano Banana Pro](https://blog.google/technology/ai/nano-banana-pro/): 11월
 - [Generative UI](https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/)
 
