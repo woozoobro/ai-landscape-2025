@@ -4,16 +4,19 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import SpaceGraph from "./SpaceGraph";
 import TimelineBar from "./TimelineBar";
+import SlidesView from "./slides/SlidesView";
+import { slides } from "@/app/data/slides";
 import { CameraControls, Loader } from "@react-three/drei";
+
 import { EventNode, Company, events } from "@/app/data/events";
 import { X } from "lucide-react";
-import {
-  EffectComposer,
-  Bloom,
-  Vignette,
-} from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
+
 import type { CameraControls as CameraControlsType } from "@react-three/drei";
+
+// View type for dual-view mode
+type ViewType = "space" | "slides";
 
 // Planet positions for camera targeting
 const PLANET_POSITIONS: Record<string, [number, number, number]> = {
@@ -91,7 +94,8 @@ function CameraController({
 
     // Track zoom level for label visibility optimization
     const distance = camera.position.length();
-    const newZoomLevel: ZoomLevel = distance > 100 ? "far" : distance > 50 ? "mid" : "close";
+    const newZoomLevel: ZoomLevel =
+      distance > 100 ? "far" : distance > 50 ? "mid" : "close";
     if (newZoomLevel !== lastZoomLevelRef.current) {
       lastZoomLevelRef.current = newZoomLevel;
       onZoomLevelChange(newZoomLevel);
@@ -149,21 +153,25 @@ function CameraController({
       if (planetPos) {
         // Per-company camera angles to isolate each planet from others
         // ViewOffset handles panel compensation, this handles hiding other planets
-        const cameraOffsets: Record<string, { x: number; y: number; z: number }> = {
-          Anthropic: { x: -12, y: 28, z: 35 },  // Camera from above-left → hides Google behind
-          OpenAI: { x: 12, y: 28, z: 35 },      // Camera from above-right → hides Google behind
-          Google: { x: 0, y: 28, z: 50 },       // Camera from above → hides Anthropic/OpenAI below
+        const cameraOffsets: Record<
+          string,
+          { x: number; y: number; z: number }
+        > = {
+          Anthropic: { x: -12, y: 28, z: 35 }, // Camera from above-left → hides Google behind
+          OpenAI: { x: 12, y: 28, z: 35 }, // Camera from above-right → hides Google behind
+          Google: { x: 0, y: 28, z: 50 }, // Camera from above → hides Anthropic/OpenAI below
         };
 
-        const offset = cameraOffsets[selectedNode.company] || cameraOffsets.Anthropic;
+        const offset =
+          cameraOffsets[selectedNode.company] || cameraOffsets.Anthropic;
 
         controls.setLookAt(
-          planetPos[0] + offset.x,  // Camera X
-          planetPos[1] + offset.y,  // Camera Y
-          planetPos[2] + offset.z,  // Camera Z
-          planetPos[0],             // Target X: planet center
-          planetPos[1],             // Target Y: planet center
-          planetPos[2],             // Target Z: planet center
+          planetPos[0] + offset.x, // Camera X
+          planetPos[1] + offset.y, // Camera Y
+          planetPos[2] + offset.z, // Camera Z
+          planetPos[0], // Target X: planet center
+          planetPos[1], // Target Y: planet center
+          planetPos[2], // Target Z: planet center
           true
         );
       }
@@ -218,6 +226,10 @@ export default function Scene() {
   const [isMuted, setIsMuted] = useState(true);
   const cameraControlsRef = useRef<CameraControlsType | null>(null);
 
+  // Dual View Mode state
+  const [activeView, setActiveView] = useState<ViewType>("space");
+  const [slideIndex, setSlideIndex] = useState(0);
+
   // Presentation Mode state
   const [presentation, setPresentation] = useState<PresentationState>({
     active: false,
@@ -226,37 +238,56 @@ export default function Scene() {
     sortedEvents: [],
   });
 
+  // Slide navigation functions
+  const nextSlide = useCallback(() => {
+    setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setSlideIndex((prev) => Math.max(prev - 1, 0));
+  }, []);
+
+  // Handle view transition - instant swap
+  const toggleView = useCallback(() => {
+    setActiveView((prev) => (prev === "space" ? "slides" : "space"));
+  }, []);
+
   // Handle node selection - auto-enter Presentation Mode
-  const handleNodeSelect = useCallback((node: EventNode | null) => {
-    if (!node) {
-      setSelectedNode(null);
-      return;
-    }
-
-    setSelectedNode(node);
-
-    // Presentation Mode가 꺼져있거나 다른 회사면 → 새로 진입
-    if (!presentation.active || presentation.company !== node.company) {
-      const sortedEvents = events
-        .filter((e) => e.company === node.company)
-        .sort((a, b) => a.date.localeCompare(b.date));
-
-      const nodeIndex = sortedEvents.findIndex(e => e.id === node.id);
-
-      setPresentation({
-        active: true,
-        company: node.company,
-        currentIndex: nodeIndex !== -1 ? nodeIndex : 0,
-        sortedEvents,
-      });
-    } else {
-      // 같은 회사 내에서 노드 클릭 → 인덱스만 업데이트
-      const nodeIndex = presentation.sortedEvents.findIndex(e => e.id === node.id);
-      if (nodeIndex !== -1) {
-        setPresentation(prev => ({ ...prev, currentIndex: nodeIndex }));
+  const handleNodeSelect = useCallback(
+    (node: EventNode | null) => {
+      if (!node) {
+        setSelectedNode(null);
+        return;
       }
-    }
-  }, [presentation.active, presentation.company, presentation.sortedEvents]);
+
+      setSelectedNode(node);
+
+      // Presentation Mode가 꺼져있거나 다른 회사면 → 새로 진입
+      if (!presentation.active || presentation.company !== node.company) {
+        const sortedEvents = events
+          .filter((e) => e.company === node.company)
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        const nodeIndex = sortedEvents.findIndex((e) => e.id === node.id);
+
+        setPresentation({
+          active: true,
+          company: node.company,
+          currentIndex: nodeIndex !== -1 ? nodeIndex : 0,
+          sortedEvents,
+        });
+      } else {
+        // 같은 회사 내에서 노드 클릭 → 인덱스만 업데이트
+        const nodeIndex = presentation.sortedEvents.findIndex(
+          (e) => e.id === node.id
+        );
+        if (nodeIndex !== -1) {
+          setPresentation((prev) => ({ ...prev, currentIndex: nodeIndex }));
+        }
+      }
+    },
+    [presentation.active, presentation.company, presentation.sortedEvents]
+  );
 
   // Enter Presentation Mode for a company
   const enterPresentationMode = useCallback((company: Company) => {
@@ -311,13 +342,16 @@ export default function Scene() {
   }, [presentation]);
 
   // Navigate to specific event (for timeline clicks)
-  const goToEvent = useCallback((index: number) => {
-    if (!presentation.active) return;
-    if (index < 0 || index >= presentation.sortedEvents.length) return;
+  const goToEvent = useCallback(
+    (index: number) => {
+      if (!presentation.active) return;
+      if (index < 0 || index >= presentation.sortedEvents.length) return;
 
-    setPresentation((prev) => ({ ...prev, currentIndex: index }));
-    setSelectedNode(presentation.sortedEvents[index]);
-  }, [presentation]);
+      setPresentation((prev) => ({ ...prev, currentIndex: index }));
+      setSelectedNode(presentation.sortedEvents[index]);
+    },
+    [presentation]
+  );
 
   // Preload next media in Presentation Mode
   useEffect(() => {
@@ -338,33 +372,74 @@ export default function Scene() {
       video.preload = "auto";
       video.src = nextEvent.media.src;
     }
-  }, [presentation.active, presentation.currentIndex, presentation.sortedEvents]);
+  }, [
+    presentation.active,
+    presentation.currentIndex,
+    presentation.sortedEvents,
+  ]);
 
-  // Keyboard navigation for Presentation Mode
+  // Keyboard navigation for both views
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!presentation.active) return;
+      // Tab key: View toggle
+      if (e.key === "Tab") {
+        e.preventDefault();
+        toggleView();
+        return;
+      }
 
-      switch (e.key) {
-        case "ArrowRight":
-        case " ": // Space
-          e.preventDefault();
-          goToNextEvent();
-          break;
-        case "ArrowLeft":
-          e.preventDefault();
-          goToPrevEvent();
-          break;
-        case "Escape":
-          e.preventDefault();
-          exitPresentationMode();
-          break;
+      // View-specific handlers
+      if (activeView === "space") {
+        // Space View: Presentation Mode navigation
+        if (!presentation.active) return;
+
+        switch (e.key) {
+          case "ArrowRight":
+          case " ": // Space
+            e.preventDefault();
+            goToNextEvent();
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            goToPrevEvent();
+            break;
+          case "Escape":
+            e.preventDefault();
+            exitPresentationMode();
+            break;
+        }
+      } else {
+        // Slides View navigation
+        switch (e.key) {
+          case "ArrowRight":
+          case " ": // Space
+            e.preventDefault();
+            nextSlide();
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            prevSlide();
+            break;
+          case "Escape":
+            e.preventDefault();
+            toggleView(); // Go back to space view
+            break;
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [presentation.active, goToNextEvent, goToPrevEvent, exitPresentationMode]);
+  }, [
+    activeView,
+    presentation.active,
+    goToNextEvent,
+    goToPrevEvent,
+    exitPresentationMode,
+    nextSlide,
+    prevSlide,
+    toggleView,
+  ]);
 
   // Track mouse position for tooltip
   useEffect(() => {
@@ -375,65 +450,84 @@ export default function Scene() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-
   return (
     <div className="w-full h-screen bg-black relative overflow-hidden">
-      <Canvas
-        camera={{ position: [0, 80, 180], fov: 50 }} // Start far away
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false, toneMappingExposure: 1.2 }}
+      {/* Space View - 3D Canvas */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-300 ${
+          activeView === "space" ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       >
-        <color attach="background" args={["#030308"]} />
-        <Suspense fallback={null}>
-          <SpaceGraph
-            onNodeSelect={handleNodeSelect}
-            onNodeHover={setHoveredNode}
-            onPlanetClick={enterPresentationMode}
-            selectedNode={selectedNode}
-            introComplete={introComplete}
-            presentationMode={presentation.active}
-            presentationCompany={presentation.company}
-            zoomLevel={zoomLevel}
-          />
-          <CameraController
-            selectedNode={selectedNode}
-            cameraControlsRef={cameraControlsRef}
-            onIntroComplete={() => setIntroComplete(true)}
-            onZoomLevelChange={setZoomLevel}
-          />
-          <EffectComposer multisampling={0}>
-            {/* Core glow - bright parts */}
-            <Bloom
-              luminanceThreshold={0.6}
-              luminanceSmoothing={0.3}
-              mipmapBlur
-              intensity={1.5}
-              radius={0.4}
+        <Canvas
+          camera={{ position: [0, 80, 180], fov: 50 }} // Start far away
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: false, toneMappingExposure: 1.2 }}
+          frameloop={activeView === "space" ? "always" : "never"}
+        >
+          <color attach="background" args={["#030308"]} />
+          <Suspense fallback={null}>
+            <SpaceGraph
+              onNodeSelect={handleNodeSelect}
+              onNodeHover={setHoveredNode}
+              onPlanetClick={enterPresentationMode}
+              selectedNode={selectedNode}
+              introComplete={introComplete}
+              presentationMode={presentation.active}
+              presentationCompany={presentation.company}
+              zoomLevel={zoomLevel}
             />
-            {/* Wide glow - atmosphere */}
-            <Bloom
-              luminanceThreshold={0.3}
-              luminanceSmoothing={0.9}
-              mipmapBlur
-              intensity={0.4}
-              radius={0.9}
+            <CameraController
+              selectedNode={selectedNode}
+              cameraControlsRef={cameraControlsRef}
+              onIntroComplete={() => setIntroComplete(true)}
+              onZoomLevelChange={setZoomLevel}
             />
-            {/* Vignette - focus attention */}
-            <Vignette eskil={false} offset={0.2} darkness={0.6} />
-          </EffectComposer>
-        </Suspense>
-      </Canvas>
-      <Loader />
 
-      {/* Hover Tooltip - follows mouse */}
-      {hoveredNode && !selectedNode && (
+            <EffectComposer multisampling={0}>
+              {/* Core glow - bright parts */}
+              <Bloom
+                luminanceThreshold={0.6}
+                luminanceSmoothing={0.3}
+                mipmapBlur
+                intensity={1.5}
+                radius={0.4}
+              />
+              {/* Wide glow - atmosphere */}
+              <Bloom
+                luminanceThreshold={0.3}
+                luminanceSmoothing={0.9}
+                mipmapBlur
+                intensity={0.4}
+                radius={0.9}
+              />
+              {/* Vignette - focus attention */}
+              <Vignette eskil={false} offset={0.2} darkness={0.6} />
+            </EffectComposer>
+          </Suspense>
+        </Canvas>
+        <Loader />
+      </div>
+
+      {/* Slides View - PPT Mode */}
+      <SlidesView
+        visible={activeView === "slides"}
+        currentIndex={slideIndex}
+        onNavigate={setSlideIndex}
+      />
+
+
+      {/* Hover Tooltip - follows mouse (Space View only) */}
+      {activeView === "space" && hoveredNode && !selectedNode && (
         <div
           className="fixed pointer-events-none"
           style={{
             zIndex: 99999,
             left: mousePos.x + 16,
             top: mousePos.y + 16,
-            transform: mousePos.x > window.innerWidth - 280 ? "translateX(-100%)" : undefined,
+            transform:
+              mousePos.x > window.innerWidth - 280
+                ? "translateX(-100%)"
+                : undefined,
           }}
         >
           <div
@@ -485,12 +579,14 @@ export default function Scene() {
         </div>
       )}
 
-      {/* Detail Overlay - Slide animation */}
+      {/* Detail Overlay - Slide animation (Space View only) */}
       <div
         className={`absolute top-0 right-0 h-full w-full md:w-1/2 bg-zinc-900/95 backdrop-blur-xl border-l border-white/10 p-8 z-2000 flex flex-col transition-transform duration-2400 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-          selectedNode ? 'translate-x-0' : 'translate-x-full'
+          activeView === "space" && selectedNode
+            ? "translate-x-0"
+            : "translate-x-full"
         }`}
-        inert={!selectedNode ? true : undefined}
+        inert={activeView !== "space" || !selectedNode ? true : undefined}
       >
         <button
           onClick={() => {
@@ -557,13 +653,40 @@ export default function Scene() {
                       title={isMuted ? "소리 켜기" : "소리 끄기"}
                     >
                       {isMuted ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-5 h-5 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+                          />
                         </svg>
                       ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-5 h-5 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                          />
                         </svg>
                       )}
                     </button>
@@ -592,12 +715,12 @@ export default function Scene() {
         )}
       </div>
 
-      {/* Presentation Mode Timeline Bar - 항상 렌더링, visible로 애니메이션 */}
+      {/* Presentation Mode Timeline Bar - Space View only */}
       <TimelineBar
         events={presentation.sortedEvents}
         currentIndex={presentation.currentIndex}
         company={presentation.company || "Anthropic"}
-        visible={presentation.active}
+        visible={activeView === "space" && presentation.active}
         onEventClick={goToEvent}
       />
     </div>
