@@ -44,6 +44,10 @@ export const events: EventNode[] = [
     date: "2025-03",
     description: "OpenAI가 MCP 공식 채택. ChatGPT 데스크톱 앱, Agents SDK에 적용. 웹 검색 기능도 함께 출시.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/openai-mcp-tweet.png",
+    },
     sources: [
       { label: "OpenAI MCP 문서", url: "https://openai.github.io/openai-agents-python/mcp/" },
       { label: "웹 검색 출시", url: "https://claude.com/blog/web-search" },
