@@ -355,7 +355,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-02",
     description: "Gemini 2.0 Pro & Flash-Lite 공개.",
-    importance: 3,
+    importance: 2,
     media: {
       type: "image",
       src: "/gemini-2.png",
@@ -370,7 +370,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-03",
     description: "Thinking Model 첫 공개. 추론 후 응답하는 방식으로 LMArena 1위 데뷔.",
-    importance: 4,
+    importance: 2,
     media: {
       type: "image",
       src: "/gemini-2-5.png",
@@ -400,7 +400,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-05",
     description: "Veo 3 (네이티브 오디오 비디오), Imagen 4 발표.",
-    importance: 4,
+    importance: 5,
     media: {
       type: "webm",
       src: "/veo3.webm",
@@ -415,7 +415,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-05",
     description: "API 테스트 플레이그라운드에서 자연어로 웹앱까지 만들 수 있는 빌더로 진화.",
-    importance: 3,
+    importance: 4,
     media: {
       type: "mp4",
       src: "/google-ai-studio.mp4",
@@ -460,7 +460,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-08",
     description: "Gemini 2.5 Flash Image 기반 이미지 생성/편집 모델. 대화형 멀티턴 편집 지원.",
-    importance: 2,
+    importance: 5,
     media: {
       type: "image",
       src: "/nano-banana.png",
@@ -476,7 +476,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-10",
     description: "Image Bridging, scene extension 기능 추가.",
-    importance: 3,
+    importance: 5,
     media: {
       type: "mp4",
       src: "/veo-3-1.mp4",
@@ -506,7 +506,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-11",
     description: "VS Code 포크 기반 agent-first IDE. 구글 클라우드 락인.",
-    importance: 4,
+    importance: 5,
     media: {
       type: "mp4",
       src: "/antigravity.mp4",
@@ -538,7 +538,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-11",
     description: "프롬프트로 커스텀 UI 자동 생성.",
-    importance: 3,
+    importance: 5,
     media: {
       type: "mp4",
       src: "/generative-ui.mp4",
@@ -553,7 +553,7 @@ export const events: EventNode[] = [
     company: "Google",
     date: "2025-12",
     description: "Generative UI 실험 프로젝트.",
-    importance: 2,
+    importance: 3,
     media: {
       type: "mp4",
       src: "/gen-tabs.mp4",

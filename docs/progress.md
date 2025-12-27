@@ -1,6 +1,6 @@
 # AI Landscape 2025 - 개발 진행 상황
 
-- [ ] 타임라인뷰 구현 어떻게 할지 (한번 쫙 정리된 내용 필요할듯)
+- [x] 타임라인뷰 구현 어떻게 할지 (한번 쫙 정리된 내용 필요할듯) → Dual View Mode로 구현 완료
 
 > 마지막 업데이트: 2025-12-28
 
@@ -60,7 +60,22 @@ const NODE_SIZE_CONFIG = {
   - offset 애니메이션 (lerp 0.02로 부드럽게 전환)
 - **라벨 표시**: 항상 표시 (zIndexRange 설정으로 UI와 자연스럽게 레이어링)
 
-#### 8. Presentation Mode (발표 모드) ✅
+#### 8. Dual View Mode (듀얼 뷰 모드) ✅ NEW
+- **두 개의 독립적인 뷰**: Space View (3D) ↔ Slides View (2D PPT)
+- **Tab 키로 전환**: 부드러운 opacity fade 트랜지션 (300ms, Tailwind)
+- **독립적 상태 관리**: 각 뷰가 자체 인덱스/상태 유지
+- **키보드 네비게이션**:
+  - `Tab`: 뷰 전환
+  - `←/→/Space`: 슬라이드/이벤트 네비게이션
+  - `Esc`: Space View 복귀 또는 Presentation Mode 종료
+- **슬라이드 타입**: title, content, bullets, image, comparison
+- **관련 파일**:
+  - Scene.tsx (뷰 상태 관리, 키보드 핸들링)
+  - components/slides/ (SlidesView, SlideRenderer, SlideProgress)
+  - app/data/slides.ts (슬라이드 데이터)
+- **구현 완료**: 2025-12-28
+
+#### 9. Presentation Mode (발표 모드) ✅
 - **진입**: 행성 클릭 시 해당 회사의 이벤트를 시간순으로 탐색
 - **키보드 네비게이션**:
   - `→` / `Space`: 다음 이벤트
@@ -78,7 +93,7 @@ const NODE_SIZE_CONFIG = {
 - **행성 자전**: 각 행성 천천히 회전 (rotation.y += 0.002)
 
 #### 7. 후처리 효과
-- **Bloom**: 이중 레이어 (코어 글로우 + 분위기)
+- **Bloom**: 단일 패스 최적화 (threshold: 0.3, intensity: 1.4, radius: 0.65)
 - **Vignette**: 화면 가장자리 어둡게
 
 ---
@@ -87,11 +102,15 @@ const NODE_SIZE_CONFIG = {
 
 ```
 components/
-├── Scene.tsx           # 메인 Canvas, 카메라 컨트롤, UI 오버레이, Presentation Mode 상태
+├── Scene.tsx           # 메인 Canvas, 카메라 컨트롤, UI 오버레이, Dual View 상태
 ├── SpaceGraph.tsx      # 3D 그래프 (행성, 노드, 조명, dim 효과)
 ├── TimelineBar.tsx     # Presentation Mode 타임라인 UI (하단 도트)
 ├── Nebula.tsx          # 배경 성운 효과 (Billboard)
 ├── DustParticles.tsx   # 먼지 파티클 시스템
+├── slides/             # Slides View (PPT 모드) 컴포넌트
+│   ├── SlidesView.tsx      # 슬라이드 뷰 컨테이너
+│   ├── SlideRenderer.tsx   # 슬라이드 타입별 렌더러
+│   └── SlideProgress.tsx   # 하단 진행률 도트
 └── nodes/
     └── CompanyNode.tsx # (현재 미사용)
 
@@ -99,7 +118,8 @@ app/
 ├── page.tsx            # 메인 페이지
 ├── globals.css         # 글로벌 스타일
 └── data/
-    └── events.ts       # 이벤트 데이터 (37개)
+    ├── events.ts       # 이벤트 데이터 (37개)
+    └── slides.ts       # 슬라이드 데이터 (PPT 콘텐츠)
 ```
 
 ---
@@ -144,13 +164,27 @@ interface EventNode {
 - [ ] 노드에서 파티클 방출 효과
 - [ ] 클릭 시 ripple/shockwave 효과
 - [ ] 자동 재생 모드 (시간순 하이라이트)
+- [ ] 성능 최적화 Option B (필요시)
+  - InstancedMesh로 노드 렌더링 (draw calls 37 → 1-3)
+  - useFrame 훅 통합 (70+ → 5개 이하)
+  - frameloop="demand" + invalidate() 수동 제어
 
 ### 우선순위 낮음
 - [ ] 사운드 효과
 - [ ] 가이드 투어 모드
 - [ ] 모바일 최적화
 
-### 완료된 개선 사항 (2025-12-28)
+### 완료된 개선 사항 (2025-12-28) - 2차
+- [x] **Dual View Mode 구현**
+  - Space View (3D) ↔ Slides View (2D PPT) 전환
+  - Tab 키로 뷰 전환, 부드러운 opacity fade (Tailwind 300ms)
+  - 각 뷰 독립적 상태 유지
+- [x] **성능 최적화 (Option A)**
+  - HTML 라벨 Lazy 렌더링: 37개 DOM → hover/selected만 (0-2개)
+  - Bloom 단일 패스: 2개 → 1개 (GPU 부하 ~50% 감소)
+  - frameloop 기본값 유지로 뷰 전환 시 렌더 지연 해결
+
+### 완료된 개선 사항 (2025-12-28) - 1차
 - [x] **상세 패널 미디어 표시**
   - 이벤트에 media 필드가 있으면 이미지/비디오 렌더링
   - 지원 형식: image, webm, mp4
