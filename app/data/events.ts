@@ -416,6 +416,10 @@ export const events: EventNode[] = [
     date: "2025-05",
     description: "API 테스트 플레이그라운드에서 자연어로 웹앱까지 만들 수 있는 빌더로 진화.",
     importance: 3,
+    media: {
+      type: "mp4",
+      src: "/google-ai-studio.mp4",
+    },
     sources: [
       { label: "AI Studio", url: "https://aistudio.google.com/" },
     ],
@@ -427,8 +431,27 @@ export const events: EventNode[] = [
     date: "2025-06",
     description: "오픈소스 AI 에이전트 CLI 도구.",
     importance: 3,
+    media: {
+      type: "image",
+      src: "/gemini-cli.png",
+    },
     sources: [
       { label: "공식 발표", url: "https://blog.google/technology/developers/introducing-gemini-cli-open-source-ai-agent/" },
+    ],
+  },
+  {
+    id: "g-notebook-video",
+    label: "NotebookLM Video",
+    company: "Google",
+    date: "2025-07",
+    description: "Video Overviews 기능 추가. 문서를 넣으면 강의 영상 생성.",
+    importance: 3,
+    media: {
+      type: "mp4",
+      src: "/notebooklm-video.mp4",
+    },
+    sources: [
+      { label: "공식 발표", url: "https://workspaceupdates.googleblog.com/2025/07/video-overviews-studio-panel-updates-notebooklm.html" },
     ],
   },
   {
@@ -441,18 +464,7 @@ export const events: EventNode[] = [
     sources: [
       { label: "공식 발표", url: "https://blog.google/products/gemini/updated-image-editing-model/" },
     ],
-  },
-  {
-    id: "g-notebook-video",
-    label: "NotebookLM Video",
-    company: "Google",
-    date: "2025-07",
-    description: "Video Overviews 기능 추가. 문서를 넣으면 강의 영상 생성.",
-    importance: 3,
-    sources: [
-      { label: "공식 발표", url: "https://workspaceupdates.googleblog.com/2025/07/video-overviews-studio-panel-updates-notebooklm.html" },
-    ],
-  },
+  },  
   {
     id: "g-veo3.1",
     label: "Veo 3.1",
