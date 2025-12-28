@@ -35,6 +35,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/MediaGenerationSlide"),
   },
   {
+    meta: { id: "agent", title: "Agent" },
+    load: () => import("./content/AgentSlide"),
+  },
+  {
     meta: { id: "anthropic-intro", title: "Anthropic" },
     load: () => import("./content/AnthropicIntroSlide"),
   },
