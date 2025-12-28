@@ -716,6 +716,39 @@ export default function Scene() {
         visible={activeView === "space" && presentation.active}
         onEventClick={goToEvent}
       />
+
+      {/* Keyboard hints - Space View only */}
+      {activeView === "space" && (
+        <>
+          <div className="fixed bottom-6 left-6 text-zinc-600 text-xs font-mono flex items-center gap-4 z-50">
+            <span>
+              <kbd className="px-1.5 py-0.5 bg-zinc-800/80 rounded text-zinc-400">
+                Tab
+              </kbd>{" "}
+              Slides
+            </span>
+            {presentation.active && (
+              <span>
+                <kbd className="px-1.5 py-0.5 bg-zinc-800/80 rounded text-zinc-400">
+                  ←
+                </kbd>
+                <kbd className="px-1.5 py-0.5 bg-zinc-800/80 rounded text-zinc-400 ml-1">
+                  →
+                </kbd>{" "}
+                Navigate
+              </span>
+            )}
+          </div>
+          {presentation.active && (
+            <div className="fixed bottom-6 right-[calc(50%+1.5rem)] text-zinc-600 text-xs font-mono z-50">
+              <kbd className="px-1.5 py-0.5 bg-zinc-800/80 rounded text-zinc-400">
+                Esc
+              </kbd>{" "}
+              Exit
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

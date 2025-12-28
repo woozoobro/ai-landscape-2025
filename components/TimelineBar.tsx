@@ -105,24 +105,6 @@ export default function TimelineBar({
           })}
         </div>
 
-        {/* Keyboard hint */}
-        <div className="flex items-center justify-center gap-4 mt-4 text-zinc-600 text-[10px]">
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400 font-mono">
-              ←
-            </kbd>
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400 font-mono">
-              →
-            </kbd>
-            Navigate
-          </span>
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-zinc-400 font-mono">
-              Esc
-            </kbd>
-            Exit
-          </span>
-        </div>
       </div>
     </div>
   );
