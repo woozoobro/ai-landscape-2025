@@ -11,6 +11,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/IntroSlide"),
   },
   {
+    meta: { id: "speaker", title: "Speaker" },
+    load: () => import("./content/SpeakerSlide"),
+  },
+  {
     meta: { id: "keywords", title: "2025 Core Keywords" },
     load: () => import("./content/KeywordsSlide"),
   },

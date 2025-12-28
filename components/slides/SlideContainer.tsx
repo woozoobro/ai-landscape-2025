@@ -18,7 +18,7 @@ export default function SlideContainer({
 
   return (
     <motion.div
-      className="absolute inset-0 flex items-center justify-center p-8 md:p-16"
+      className="absolute inset-0"
       initial={false}
       animate={{
         x: `${offset * 100}%`,
