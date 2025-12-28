@@ -66,6 +66,22 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "three-giants-summary", title: "Three Giants Summary" },
     load: () => import("./content/ThreeGiantsSummarySlide"),
   },
+  {
+    meta: { id: "claude-code-intro", title: "Claude Code 소개" },
+    load: () => import("./content/ClaudeCodeIntroSlide"),
+  },
+  {
+    meta: { id: "claude-code-why", title: "비개발자가 왜 Claude Code를?" },
+    load: () => import("./content/ClaudeCodeWhySlide"),
+  },
+  {
+    meta: { id: "claude-code-what", title: "Claude Code가 뭔데?" },
+    load: () => import("./content/ClaudeCodeWhatSlide"),
+  },
+  {
+    meta: { id: "claude-code-principle", title: "Claude Code의 원리" },
+    load: () => import("./content/ClaudeCodePrincipleSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
