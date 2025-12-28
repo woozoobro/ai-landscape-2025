@@ -39,6 +39,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/AgentSlide"),
   },
   {
+    meta: { id: "vibe-coding", title: "Vibe Coding" },
+    load: () => import("./content/VibeCodingSlide"),
+  },
+  {
     meta: { id: "anthropic-intro", title: "Anthropic" },
     load: () => import("./content/AnthropicIntroSlide"),
   },
