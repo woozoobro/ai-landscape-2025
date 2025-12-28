@@ -14,6 +14,30 @@ description: 프레젠테이션 슬라이드 컴포넌트 생성. 새 슬라이�
 3. 한 화면에 완결 (스크롤 금지)
 4. 반응형 필수 (`md:` 프리픽스)
 
+## 애니메이션
+
+애니메이션 필요 시 **framer-motion** 또는 **gsap** 사용 (둘 다 설치됨)
+
+```tsx
+import { motion } from "framer-motion";
+
+<motion.div
+  animate={{ y: [0, -12, 0] }}
+  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+>
+  둥실둥실
+</motion.div>
+```
+
+### 절대 금지
+
+- `<style>` 태그 사용 금지
+- `<style jsx>` 사용 금지
+- CSS `@keyframes` 직접 작성 금지
+- 인라인 `style` 속성에 animation 정의 금지
+
+→ 모든 애니메이션은 framer-motion 또는 gsap로 구현할 것
+
 ## 톤앤매너
 
 - 검은 배경, 흰 텍스트
