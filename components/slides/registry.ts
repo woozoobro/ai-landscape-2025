@@ -43,16 +43,8 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/VibeCodingSlide"),
   },
   {
-    meta: { id: "anthropic-intro", title: "Anthropic" },
-    load: () => import("./content/AnthropicIntroSlide"),
-  },
-  {
-    meta: { id: "openai-intro", title: "OpenAI" },
-    load: () => import("./content/OpenAIIntroSlide"),
-  },
-  {
-    meta: { id: "google-intro", title: "Google" },
-    load: () => import("./content/GoogleIntroSlide"),
+    meta: { id: "three-directions", title: "Three Directions" },
+    load: () => import("./content/ThreeDirectionsSlide"),
   },
 ];
 
