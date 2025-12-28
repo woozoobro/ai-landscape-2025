@@ -38,6 +38,20 @@ import { motion } from "framer-motion";
 
 → 모든 애니메이션은 framer-motion 또는 gsap로 구현할 것
 
+## 아이콘
+
+아이콘 필요 시 **lucide-react** 사용 (설치됨)
+
+```tsx
+import { FileText, History, Shield } from "lucide-react";
+
+<FileText className="w-6 h-6 md:w-8 md:h-8 text-emerald-500" />
+```
+
+- 반응형 사이즈 적용 (`w-5 h-5 md:w-6 md:h-6`)
+- 색상은 TailwindCSS 클래스로 지정
+- 텍스트 기반 아이콘 (`[ ]`, `→` 등) 대신 lucide 아이콘 우선 사용
+
 ## 톤앤매너
 
 - 검은 배경, 흰 텍스트

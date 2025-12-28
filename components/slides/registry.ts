@@ -23,6 +23,14 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/KeywordsSlide"),
   },
   {
+    meta: { id: "reasoning-model", title: "Reasoning Model" },
+    load: () => import("./content/ReasoningModelSlide"),
+  },
+  {
+    meta: { id: "context-engineering", title: "Context Engineering" },
+    load: () => import("./content/ContextEngineeringSlide"),
+  },
+  {
     meta: { id: "anthropic-intro", title: "Anthropic" },
     load: () => import("./content/AnthropicIntroSlide"),
   },
