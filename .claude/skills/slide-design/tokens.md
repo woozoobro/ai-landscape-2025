@@ -17,13 +17,16 @@
 
 ## 타이포그래피
 
-| 요소 | 클래스 |
-|------|--------|
-| 메인 타이틀 | `text-6xl md:text-8xl font-bold` |
-| 섹션 제목 | `text-5xl md:text-6xl font-bold` |
-| 부제목 | `text-2xl md:text-3xl` |
-| 리스트 아이템 | `text-2xl md:text-3xl` |
-| 캡션 | `text-lg text-zinc-500` |
+**최소 폰트 사이즈: `text-5xl`** (발표용이므로 가독성 우선)
+
+| 요소 | 클래스 | 비고 |
+|------|--------|------|
+| 메인 타이틀 | `text-5xl md:text-7xl lg:text-8xl font-bold` | 강조 시 bold |
+| 섹션 제목 | `text-5xl md:text-6xl font-bold` | |
+| 부제목/본문 | `text-5xl md:text-5xl lg:text-5xl` | 기본 굵기 normal |
+| 리스트 아이템 | `text-5xl` | |
+
+⚠️ `text-4xl` 이하는 사용 금지 (발표 시 가독성 저하)
 
 ## 레이아웃
 

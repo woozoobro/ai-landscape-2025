@@ -15,6 +15,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     load: () => import("./content/SpeakerSlide"),
   },
   {
+    meta: { id: "pace", title: "The Pace of AI" },
+    load: () => import("./content/PaceSlide"),
+  },
+  {
     meta: { id: "keywords", title: "2025 Core Keywords" },
     load: () => import("./content/KeywordsSlide"),
   },

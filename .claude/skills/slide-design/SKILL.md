@@ -32,8 +32,8 @@ export default function MySlide({}: SlideProps) {
   return (
     <div className="w-full h-full flex items-center justify-center p-8 md:p-16">
       <div className="max-w-4xl space-y-8">
-        <h2 className="text-5xl md:text-6xl font-bold text-white">제목</h2>
-        <p className="text-2xl md:text-3xl text-zinc-400">설명</p>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white">제목</h2>
+        <p className="text-5xl text-zinc-400">설명</p>
       </div>
     </div>
   );
@@ -53,8 +53,10 @@ export default function MySlide({}: SlideProps) {
 상세 색상/타이포/레이아웃은 [tokens.md](tokens.md) 참고.
 
 핵심만:
-- 제목: `text-white`, `text-5xl md:text-6xl font-bold`
-- 본문: `text-zinc-400`, `text-2xl md:text-3xl`
+- **최소 폰트: `text-5xl`** (text-4xl 이하 금지)
+- **기본 굵기: `font-normal`** (강조 시에만 bold)
+- 제목: `text-white`, `text-5xl md:text-7xl lg:text-8xl font-bold`
+- 본문: `text-zinc-400`, `text-5xl`
 - 래퍼: `w-full h-full flex items-center justify-center p-8 md:p-16`
 
 ## 슬라이드 유형
