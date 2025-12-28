@@ -63,12 +63,12 @@ export default function SlidesView({
 
   return (
     <div
-      className={`fixed inset-0 bg-black flex flex-col transition-opacity duration-300 z-[1000] ${
+      className={`fixed inset-0 bg-black transition-opacity duration-300 z-[1000] ${
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
       {/* Slide viewport */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
         {visible && Array.from(mountedIndices).map((index) => {
           const SlideComponent = getSlideComponent(index);
           const isActive = index === currentIndex;

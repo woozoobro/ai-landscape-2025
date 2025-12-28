@@ -12,7 +12,7 @@ export default function SlideProgress({
   onNavigate,
 }: SlideProgressProps) {
   return (
-    <div className="flex justify-center items-center gap-2 py-6">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex justify-center items-center gap-2">
       {Array.from({ length: total }).map((_, i) => (
         <button
           key={i}
