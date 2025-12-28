@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Cloud, User, Send, ArrowRight, X, BookOpen } from "lucide-react";
+import { FileText, User, Send, ArrowRight, X, BookOpen, Globe } from "lucide-react";
 import type { SlideProps } from "../types";
 
 const mcpServices = ["Notion", "Slack", "Jira", "GitHub"];
@@ -55,8 +55,82 @@ const skillDetails = {
   },
 };
 
+const agentDetails = {
+  리서처: {
+    title: "리서처",
+    desc: "정보 수집 전문 에이전트",
+    color: "text-purple-400",
+    content: [
+      "# Researcher Agent",
+      "",
+      "## 역할",
+      "정보 수집 및 조사 전담",
+      "",
+      "## 주요 작업",
+      "- 웹 검색 및 자료 수집",
+      "- 문서 분석 및 요약",
+      "- 트렌드 리서치",
+    ],
+  },
+  디자이너: {
+    title: "디자이너",
+    desc: "시각 디자인 전문 에이전트",
+    color: "text-pink-400",
+    content: [
+      "# Designer Agent",
+      "",
+      "## 역할",
+      "시각 디자인 및 UI 전담",
+      "",
+      "## 주요 작업",
+      "- 슬라이드 디자인",
+      "- UI 컴포넌트 생성",
+      "- 시각 자료 제작",
+    ],
+  },
+  분석가: {
+    title: "분석가",
+    desc: "데이터 분석 전문 에이전트",
+    color: "text-indigo-400",
+    content: [
+      "# Analyst Agent",
+      "",
+      "## 역할",
+      "데이터 분석 및 인사이트 도출",
+      "",
+      "## 주요 작업",
+      "- 데이터 처리 및 분석",
+      "- 리포트 생성",
+      "- 패턴 및 트렌드 분석",
+    ],
+  },
+};
+
+const claudeMdContent = {
+  title: "CLAUDE.md",
+  desc: "프로젝트 규칙서",
+  content: [
+    "# AI Landscape 2025",
+    "",
+    "## 프로젝트 목적",
+    "- 인프런 라이브 세션 보조 자료",
+    "- 3사 AI 트렌드 시각화",
+    "",
+    "## 기술 스택",
+    "- Next.js 16 + React 19",
+    "- TailwindCSS v4",
+    "- TypeScript",
+    "",
+    "## 핵심 규칙",
+    "- docs/progress.md 참조 필수",
+    "- 슬라이드는 registry.ts에 등록",
+  ],
+};
+
 export default function ContextDeskSlide({}: SlideProps) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [showClaudeMd, setShowClaudeMd] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-8 gap-10 overflow-hidden relative">
@@ -91,18 +165,21 @@ export default function ContextDeskSlide({}: SlideProps) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              {/* CLAUDE.md 사원증 */}
+              {/* CLAUDE.md 규칙서 */}
               <motion.div
-                className="absolute top-5 left-5 w-28 h-20 bg-white rounded-xl shadow-lg flex flex-col items-center justify-center"
+                className="absolute top-5 left-5 w-28 h-20 bg-white rounded-xl shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
+                onClick={() => setShowClaudeMd(true)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="w-8 h-8 rounded-full bg-emerald-400 mb-1" />
+                <FileText className="w-7 h-7 text-emerald-500 mb-0.5" />
                 <span className="text-sm font-bold text-zinc-800">
                   CLAUDE.md
                 </span>
-                <span className="text-xs text-zinc-500">사원증</span>
+                <span className="text-[10px] text-zinc-500">규칙서 (클릭!)</span>
               </motion.div>
 
               {/* 작업 서류들 */}
@@ -211,10 +288,13 @@ export default function ContextDeskSlide({}: SlideProps) {
             ].map((agent, i) => (
               <motion.div
                 key={agent.name}
-                className="flex flex-col items-center gap-3"
+                className="flex flex-col items-center gap-3 cursor-pointer"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 + i * 0.1 }}
+                onClick={() => setSelectedAgent(agent.name)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <div
                   className={`w-20 h-20 ${agent.color} rounded-full flex items-center justify-center shadow-xl`}
@@ -229,31 +309,59 @@ export default function ContextDeskSlide({}: SlideProps) {
         </motion.div>
       </div>
 
-      {/* MCP - 외부 서비스들 */}
+      {/* MCP - 모니터 + 네트워크 */}
       <motion.div
-        className="flex items-center gap-8"
+        className="flex items-center gap-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        <div className="flex items-center gap-3">
-          <Cloud className="w-8 h-8 text-cyan-400" />
+        {/* MCP 라벨 */}
+        <div className="flex flex-col items-center gap-1">
           <span className="text-2xl font-bold text-cyan-400">MCP</span>
-          <span className="text-xl text-zinc-500">외부 SaaS 연동</span>
+          <span className="text-sm text-zinc-500">외부 연동</span>
         </div>
-        <div className="flex gap-3">
-          {mcpServices.map((service, i) => (
-            <motion.div
-              key={service}
-              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 rounded-full border border-zinc-700"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 + i * 0.08 }}
-            >
-              <Cloud className="w-4 h-4 text-cyan-400/60" />
-              <span className="text-lg text-zinc-300">{service}</span>
-            </motion.div>
-          ))}
+
+        {/* 모니터 프레임 */}
+        <div className="relative">
+          {/* 모니터 */}
+          <div className="bg-zinc-900 border-2 border-cyan-500/50 rounded-xl p-4 shadow-lg shadow-cyan-500/10">
+            {/* 화면 안 네트워크 */}
+            <div className="flex items-center gap-3">
+              {/* 중앙 허브 */}
+              <div className="w-10 h-10 bg-cyan-500/20 rounded-full flex items-center justify-center border border-cyan-500/50">
+                <Globe className="w-6 h-6 text-cyan-400" />
+              </div>
+
+              {/* 연결선 + 서비스들 */}
+              <div className="flex items-center gap-2">
+                {mcpServices.map((service, i) => (
+                  <motion.div
+                    key={service}
+                    className="flex items-center"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 + i * 0.1 }}
+                  >
+                    {/* 연결선 */}
+                    <div className="w-4 h-0.5 bg-cyan-500/40" />
+                    {/* 서비스 노드 */}
+                    <div className="px-3 py-1.5 bg-zinc-800 rounded-lg border border-zinc-600 text-sm text-zinc-300">
+                      {service}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 모니터 받침 */}
+          <div className="flex justify-center">
+            <div className="w-16 h-2 bg-zinc-700 rounded-b" />
+          </div>
+          <div className="flex justify-center">
+            <div className="w-24 h-1.5 bg-zinc-700 rounded-b" />
+          </div>
         </div>
       </motion.div>
 
@@ -268,6 +376,146 @@ export default function ContextDeskSlide({}: SlideProps) {
         <span className="text-orange-400 font-semibold">책상을 깔끔하게</span>{" "}
         유지하는 것
       </motion.p>
+
+      {/* CLAUDE.md 모달 */}
+      <AnimatePresence>
+        {showClaudeMd && (
+          <motion.div
+            className="absolute inset-0 bg-black/60 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowClaudeMd(false)}
+          >
+            <motion.div
+              className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
+              initial={{ scale: 0.8, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 50 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 헤더 */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-emerald-400" />
+                  <div>
+                    <h3 className="text-2xl font-bold text-emerald-400">
+                      {claudeMdContent.title}
+                    </h3>
+                    <p className="text-sm text-zinc-500">
+                      {claudeMdContent.desc}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowClaudeMd(false)}
+                  className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                >
+                  <X className="w-6 h-6 text-zinc-500" />
+                </button>
+              </div>
+
+              {/* 내용 */}
+              <div className="bg-zinc-800 rounded-xl p-4 font-mono text-sm space-y-1">
+                {claudeMdContent.content.map((line, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    className={
+                      line.startsWith("# ")
+                        ? "text-xl font-bold text-white"
+                        : line.startsWith("## ")
+                        ? "text-lg font-semibold text-emerald-400 mt-3"
+                        : line.startsWith("- ")
+                        ? "text-zinc-400 pl-4"
+                        : "text-zinc-500"
+                    }
+                  >
+                    {line.replace(/^#+\s*/, "").replace(/^-\s*/, "• ")}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* 안내 */}
+              <p className="text-center text-sm text-zinc-600 mt-4">
+                프로젝트의 시스템 프롬프트 - 항상 Context에 로드됨
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Agent 상세 모달 */}
+      <AnimatePresence>
+        {selectedAgent && agentDetails[selectedAgent as keyof typeof agentDetails] && (
+          <motion.div
+            className="absolute inset-0 bg-black/60 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedAgent(null)}
+          >
+            <motion.div
+              className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
+              initial={{ scale: 0.8, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 50 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 헤더 */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <User className={`w-8 h-8 ${agentDetails[selectedAgent as keyof typeof agentDetails].color}`} />
+                  <div>
+                    <h3 className={`text-2xl font-bold ${agentDetails[selectedAgent as keyof typeof agentDetails].color}`}>
+                      {agentDetails[selectedAgent as keyof typeof agentDetails].title}
+                    </h3>
+                    <p className="text-sm text-zinc-500">
+                      {agentDetails[selectedAgent as keyof typeof agentDetails].desc}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedAgent(null)}
+                  className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                >
+                  <X className="w-6 h-6 text-zinc-500" />
+                </button>
+              </div>
+
+              {/* 내용 */}
+              <div className="bg-zinc-800 rounded-xl p-4 font-mono text-sm space-y-1">
+                {agentDetails[selectedAgent as keyof typeof agentDetails].content.map((line, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    className={
+                      line.startsWith("# ")
+                        ? "text-xl font-bold text-white"
+                        : line.startsWith("## ")
+                        ? `text-lg font-semibold ${agentDetails[selectedAgent as keyof typeof agentDetails].color} mt-3`
+                        : line.startsWith("- ")
+                        ? "text-zinc-400 pl-4"
+                        : "text-zinc-500"
+                    }
+                  >
+                    {line.replace(/^#+\s*/, "").replace(/^-\s*/, "• ")}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* 안내 */}
+              <p className="text-center text-sm text-zinc-600 mt-4">
+                별도 Context에서 작업 → 결과만 전달
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Skill 상세 모달 */}
       <AnimatePresence>
