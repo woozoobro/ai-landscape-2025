@@ -21,9 +21,9 @@
 
 | 요소 | 클래스 | 비고 |
 |------|--------|------|
-| 메인 타이틀 | `text-5xl md:text-7xl lg:text-8xl font-bold` | 강조 시 bold |
-| 섹션 제목 | `text-5xl md:text-6xl font-bold` | |
-| 부제목/본문 | `text-5xl md:text-5xl lg:text-5xl` | 기본 굵기 normal |
+| 메인 타이틀 | `text-7xl md:text-8xl lg:text-9xl font-bold` | 가장 큰 제목 |
+| 섹션 제목 | `text-6xl md:text-7xl lg:text-8xl font-bold` | |
+| 부제목/본문 | `text-5xl md:text-6xl` | 기본 굵기 normal |
 | 리스트 아이템 | `text-5xl` | |
 
 ⚠️ `text-4xl` 이하는 사용 금지 (발표 시 가독성 저하)
