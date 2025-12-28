@@ -46,6 +46,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "three-directions", title: "Three Directions" },
     load: () => import("./content/ThreeDirectionsSlide"),
   },
+  {
+    meta: { id: "company-strategies", title: "Company Strategies" },
+    load: () => import("./content/CompanyStrategiesSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */

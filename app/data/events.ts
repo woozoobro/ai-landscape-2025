@@ -129,21 +129,49 @@ export const events: EventNode[] = [
     ],
   },
   {
-    id: "a-chrome-mcp",
-    label: "MCP 표준화",
+    id: "a-code-1b",
+    label: "Claude Code $1B",
     company: "Anthropic",
     date: "2025-12",
-    description: "Claude Code 매출 약 1조원 달성. Slack 통합. Claude for Chrome 모든 유료 구독자 확대. MCP를 재단에 기부하여 업계 오픈 표준화. Bun 인수.",
+    description: "Claude Code 6개월만에 약 1조원 매출 달성. Bun 인수.",
     importance: 5,
+    media: {
+      type: "image",
+      src: "/claude-code-1b.png",
+    },
+    sources: [
+      { label: "공식 발표", url: "https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone" },
+    ],
+  },
+  {
+    id: "a-slack-chrome",
+    label: "Slack에서 사용하는 Claude & Chrome 확장프로그램 정식 출시",
+    company: "Anthropic",
+    date: "2025-12",
+    description: "Claude Code Slack 통합. Claude for Chrome 모든 유료 구독자 확대.",
+    importance: 4,
     media: {
       type: "mp4",
       src: "/claude-in-chrome-official.mp4",
     },
     sources: [
-      { label: "Claude Code $1B", url: "https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone" },
       { label: "Slack 통합", url: "https://claude.com/blog/claude-code-and-slack" },
       { label: "Chrome 정식", url: "https://www.anthropic.com/news/claude-for-chrome" },
-      { label: "MCP 재단 기부", url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" },
+    ],
+  },
+  {
+    id: "a-mcp-foundation",
+    label: "MCP 표준화",
+    company: "Anthropic",
+    date: "2025-12",
+    description: "MCP를 Agentic AI Foundation(AAIF)에 기부하여 업계 오픈 표준화.",
+    importance: 5,
+    media: {
+      type: "image",
+      src: "/mcp-foundation.png",
+    },
+    sources: [
+      { label: "공식 발표", url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" },
     ],
   },
 
