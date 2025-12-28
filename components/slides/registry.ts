@@ -62,6 +62,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "google", title: "Google - 판의 크기" },
     load: () => import("./content/GoogleSlide"),
   },
+  {
+    meta: { id: "three-giants-summary", title: "Three Giants Summary" },
+    load: () => import("./content/ThreeGiantsSummarySlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
