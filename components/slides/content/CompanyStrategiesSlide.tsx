@@ -143,7 +143,7 @@ export default function CompanyStrategiesSlide({}: SlideProps) {
           </div>
         </motion.div>
 
-        {/* Google - 크기 (그리드 확장) */}
+        {/* Google - 크기 (동심원 확장) */}
         <motion.div
           className="flex-1 flex flex-col items-center gap-8"
           initial={{ opacity: 0 }}
@@ -152,26 +152,36 @@ export default function CompanyStrategiesSlide({}: SlideProps) {
         >
           <p className="text-4xl md:text-5xl lg:text-6xl text-white font-bold">크기</p>
 
-          {/* 확장되는 그리드 */}
+          {/* 확장되는 동심원 - Ripple 효과 */}
           <div className="relative h-48 md:h-64 w-48 md:w-64 flex items-center justify-center">
-            <div className="grid grid-cols-4 grid-rows-4 gap-1.5 md:gap-2">
-              {Array.from({ length: 16 }).map((_, i) => {
-                const row = Math.floor(i / 4);
-                const col = i % 4;
-                const distFromCenter = Math.max(Math.abs(row - 1.5), Math.abs(col - 1.5));
-                const delay = 0.8 + distFromCenter * 0.15;
-
-                return (
-                  <motion.div
-                    key={i}
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-md border-2 border-blue-400 bg-blue-400/10"
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 0.9 - distFromCenter * 0.15, scale: 1 }}
-                    transition={{ duration: 0.3, delay }}
-                  />
-                );
-              })}
-            </div>
+            {/* 중앙 원 */}
+            <motion.div
+              className="absolute w-4 h-4 md:w-5 md:h-5 rounded-full bg-blue-400 z-10"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.7, type: "spring" }}
+            />
+            {/* Ripple 원들 - 중앙에서 바깥으로 */}
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute rounded-full border-2 border-blue-400"
+                style={{
+                  width: "20%",
+                  height: "20%",
+                }}
+                initial={{ scale: 0, opacity: 0.8 }}
+                animate={{
+                  scale: 1 + i * 1.2,
+                  opacity: 0.7 - i * 0.15,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.9 + i * 0.15,
+                  ease: "easeOut",
+                }}
+              />
+            ))}
           </div>
 
           <div className="flex items-center gap-3">
