@@ -285,7 +285,7 @@ Nano Banana를 더 업그레이드한 Nano Banana Pro도 출시 했고요. 이�
 서로 다른 비전을 가지고 달려온 이들의 경쟁 덕분에, 우리는 1년 전과는 비교할 수 없는 완전히 새로운 AI 생태계를 마주하고 있네요.
 
 
-## 3. 주요 이슈, 그래서 어떻게 쓰고 있는지!
+## 3. 대담 - 활용 사례
 
 ### Anthropic - Claude Code
 - [ClaudeCodeIntroSlide]
@@ -399,15 +399,14 @@ Skills도 똑같아요. 평소엔 context를 차지하지 않다가, "이 작업
 ### Google - Antigravity, NotebookLM, NanoBanana
 
 
-## 4. 대담
-
-## 5. 질의응답
+## 4. 질의응답
 
 
 ## 마무리 
 ```
 andrej karpathy
 넌 어떻게 생각해? 라고 묻지 마세요.
+
 사고 실험 도구, thinking game
 
 각각의 AI들 나는 실제로 어떻게 활용하고 있는지 소개하는 거 
