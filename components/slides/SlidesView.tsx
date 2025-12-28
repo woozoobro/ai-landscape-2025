@@ -76,7 +76,7 @@ export default function SlidesView({
 
           return (
             <SlideContainer
-              key={slideRegistry[index].meta.id}
+              key={`${slideRegistry[index].meta.id}-${isActive}`}
               index={index}
               currentIndex={currentIndex}
             >
