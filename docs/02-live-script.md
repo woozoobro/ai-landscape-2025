@@ -332,6 +332,7 @@ Anthropic에서 만든 CLI 기반의 코딩 에이전트 입니다. 자연어로
 "클로드 코드 사용법"에 대한 더 자세한 내용은 [클로드 코드 가이드](https://ai-landscape-2025.vercel.app/claude-code)를 참고하시죠.
 
 - [Claude Code 화면 직접 보여드리기]
+Claude Code를 잠깐 보여드리자면
 `현재 프로젝트가 어떤 프로젝트지?  입력`
 
 내 프로젝트가 어떤 건지, Context를 파악하고 있다는 건 정말 큰 장점이죠.

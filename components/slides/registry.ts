@@ -82,6 +82,14 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "claude-code-principle", title: "Claude Code의 원리" },
     load: () => import("./content/ClaudeCodePrincipleSlide"),
   },
+  {
+    meta: { id: "tool-use", title: "Tool Use" },
+    load: () => import("./content/ToolUseSlide"),
+  },
+  {
+    meta: { id: "claude-folder", title: ".claude 폴더" },
+    load: () => import("./content/ClaudeFolderSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
