@@ -43,10 +43,14 @@ export default function ContextEngineeringSlide({}: SlideProps) {
               <span className="text-zinc-300">예쁘게 할까</span>
             </p>
 
-            {/* 단순한 질문 박스 */}
+            {/* 프롬프트 엔지니어링 예시 */}
             <div className="bg-zinc-800 rounded-xl p-3 md:p-4 border border-zinc-700">
-              <p className="text-xl md:text-2xl text-zinc-400 font-mono">
-                "이 코드 버그 찾아줘"
+              <p className="text-lg md:text-xl text-zinc-400 font-mono leading-relaxed">
+                당신은 시니어 개발자입니다.
+                <br />
+                이 코드를 분석해주세요.
+                <br />
+                작업을 진행할 땐 단계별로 설명해주세요.
               </p>
             </div>
           </motion.div>
