@@ -13,21 +13,22 @@ export default function SlideContainer({
   index,
   currentIndex,
 }: SlideContainerProps) {
-  // 현재 슬라이드 기준으로 위치 계산
-  const offset = index - currentIndex;
+  const isActive = index === currentIndex;
 
   return (
     <motion.div
       className="absolute inset-0"
       initial={false}
       animate={{
-        x: `${offset * 100}%`,
+        scale: isActive ? 1 : 0.97,
+        opacity: isActive ? 1 : 0,
       }}
       transition={{
-        x: { type: "tween", duration: 1.3, ease: [0.19, 1.06, 0.01, 1] },
+        duration: 0.6,
+        ease: [0.8, 0, 0.3, 1],
       }}
       style={{
-        pointerEvents: offset === 0 ? "auto" : "none",
+        pointerEvents: isActive ? "auto" : "none",
       }}
     >
       {children}
