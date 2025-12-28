@@ -54,6 +54,14 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "anthropic", title: "Anthropic - 일의 깊이" },
     load: () => import("./content/AnthropicSlide"),
   },
+  {
+    meta: { id: "openai", title: "OpenAI - 일상의 넓이" },
+    load: () => import("./content/OpenAISlide"),
+  },
+  {
+    meta: { id: "google", title: "Google - 판의 크기" },
+    load: () => import("./content/GoogleSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
