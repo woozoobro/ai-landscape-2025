@@ -90,6 +90,10 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "claude-folder", title: ".claude 폴더" },
     load: () => import("./content/ClaudeFolderSlide"),
   },
+  {
+    meta: { id: "context-desk", title: "Context = 책상" },
+    load: () => import("./content/ContextDeskSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
