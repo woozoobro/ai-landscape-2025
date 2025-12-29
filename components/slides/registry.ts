@@ -94,6 +94,14 @@ export const slideRegistry: LazySlideDefinition[] = [
     meta: { id: "context-desk", title: "Context = 책상" },
     load: () => import("./content/ContextDeskSlide"),
   },
+  {
+    meta: { id: "live-picks", title: "써보면 좋은 것들" },
+    load: () => import("./content/LivePicksSlide"),
+  },
+  {
+    meta: { id: "outro", title: "더 알아보기" },
+    load: () => import("./content/OutroSlide"),
+  },
 ];
 
 /** Helper to get slide metadata without loading component */
