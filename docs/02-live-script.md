@@ -3,6 +3,7 @@
 ## 0. 인트로 (주형 발표)
 
 - [IntroSlide]
+- [SpeakerSlide]
 ~~ 자기 소개
 
 - [PaceSlide]

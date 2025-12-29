@@ -38,16 +38,32 @@ export default function SpeakerSlide({}: SlideProps) {
             </li>
           </ul>
 
-          {/* 우측: 사진 + 이름 */}
+          {/* 우측: 사진 + QR + 이름 */}
           <div className="flex flex-col items-center gap-6">
-            <div className="w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden ring-4 ring-zinc-700">
-              <Image
-                src="/woozoobro.png"
-                alt="우주형"
-                width={288}
-                height={288}
-                className="w-full h-full object-cover"
-              />
+            <div className="flex items-center gap-8">
+              {/* 프로필 사진 */}
+              <div className="w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden ring-4 ring-zinc-700">
+                <Image
+                  src="/woozoobro.png"
+                  alt="우주형"
+                  width={288}
+                  height={288}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* LinkedIn QR */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-xl p-2">
+                  <Image
+                    src="/linkedin-qr-woozoobro.png"
+                    alt="LinkedIn QR"
+                    width={160}
+                    height={160}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <span className="text-sm text-zinc-500">LinkedIn</span>
+              </div>
             </div>
             <div className="text-center space-y-2">
               <h3 className="text-5xl font-bold text-white">우주형</h3>
