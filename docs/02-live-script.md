@@ -393,8 +393,8 @@ Skills도 똑같아요. 평소엔 context를 차지하지 않다가, "이 작업
 자 이렇게 **"우리 팀은 이런 식으로 일해"**라고 마크다운(Markdown) 문서와 폴더 구조를 만들기만 하면 나머지는 Claude가 이 문서를 읽고 '눈치껏' 일해주는 겁니다.
 
 
+- [LivePicksSlide]
 ### OpenAI
-- Voice Mode
 일상에서 언어 공부할 때, Voice Mode는 OpenAI가 젤 잘하는 듯.
 
 ### Google - Antigravity, NotebookLM, NanoBanana
@@ -403,17 +403,22 @@ Skills도 똑같아요. 평소엔 context를 차지하지 않다가, "이 작업
 ## 4. 질의응답
 
 
-## 마무리 
-```
-andrej karpathy
-넌 어떻게 생각해? 라고 묻지 마세요.
+## 마무리
+[Thinking about Thinking](https://www.youtube.com/watch?v=d95J8yzvjbQ&t=4901s)
 
-사고 실험 도구, thinking game
+[고졸 OpenAI Engineer](https://www.youtube.com/watch?v=vq5WhoPCWQ8)
 
-각각의 AI들 나는 실제로 어떻게 활용하고 있는지 소개하는 거 
+[바이브 코딩](https://x.com/karpathy/status/1886192184808149383)
+
+[LLM한테 “너는 어떻게 생각해?”라고 묻지 마세요](https://x.com/karpathy/status/1997731268969304070)
+
+[Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+
+[Agents](https://agents.md/)
+https://aaif.io/
 
 SOTA 관련 - 한번의 경험에 머물러 있지 않는 마인드셋
 
 https://labs.google/ -> 구글 실험 진짜 많이 함
-```
+
 

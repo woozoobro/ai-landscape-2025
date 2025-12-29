@@ -63,7 +63,7 @@ export default function SlidesView({
 
   return (
     <div
-      className={`fixed inset-0 bg-black transition-opacity duration-300 z-[1000] ${
+      className={`fixed inset-0 bg-[#121212] transition-opacity duration-300 z-[1000] ${
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
