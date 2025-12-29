@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense, lazy, useRef } from "react";
+import { useCallback, useMemo, Suspense, lazy, useState, useRef, useEffect } from "react";
 import { slideRegistry, TOTAL_SLIDES } from "./registry";
 import SlideProgress from "./SlideProgress";
 import SlideContainer from "./SlideContainer";
@@ -21,16 +21,21 @@ export default function SlidesView({
   currentIndex,
   onNavigate,
 }: SlidesViewProps) {
-  // Cache for loaded components
-  const loadedComponentsRef = useRef<Map<number, ComponentType<SlideProps>>>(
-    new Map()
+  // Cache for loaded components (using state to avoid ref access during render)
+  const [loadedComponents] = useState<Map<number, ComponentType<SlideProps>>>(
+    () => new Map()
   );
 
-  // Track previous index for direction
+  // Track direction based on navigation
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const prevIndexRef = useRef(currentIndex);
-  const direction: "forward" | "backward" =
-    currentIndex >= prevIndexRef.current ? "forward" : "backward";
-  prevIndexRef.current = currentIndex;
+
+  useEffect(() => {
+    const newDirection = currentIndex >= prevIndexRef.current ? "forward" : "backward";
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate previous value tracking pattern
+    setDirection(newDirection);
+    prevIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   // Determine which slides should be mounted
   const mountedIndices = useMemo(() => {
@@ -47,23 +52,23 @@ export default function SlidesView({
 
   // Lazy load slide component with caching
   const getSlideComponent = useCallback((index: number) => {
-    const cached = loadedComponentsRef.current.get(index);
+    const cached = loadedComponents.get(index);
     if (cached) {
       return cached;
     }
 
     const LazyComponent = lazy(async () => {
-      const module = await slideRegistry[index].load();
-      loadedComponentsRef.current.set(index, module.default);
-      return module;
+      const slideModule = await slideRegistry[index].load();
+      loadedComponents.set(index, slideModule.default);
+      return slideModule;
     });
 
     return LazyComponent;
-  }, []);
+  }, [loadedComponents]);
 
   return (
     <div
-      className={`fixed inset-0 bg-[#121212] transition-opacity duration-300 z-[1000] ${
+      className={`fixed inset-0 bg-zinc-950 transition-opacity duration-300 z-1000 ${
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
