@@ -15,6 +15,16 @@
   },
   "enabledPlugins": {},
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/user-prompt-submit.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

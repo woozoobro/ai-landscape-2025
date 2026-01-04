@@ -31,29 +31,30 @@ LOG_FILE="${PROJECT_DIR}/.claude/logs/${TODAY}.md"
     exit 0
   fi
 
-  # Create JSON payload using jq for proper escaping
+  # Write log header first
+  {
+    echo "## $(date +%H:%M)"
+    echo ""
+    echo "> $PROMPT"
+    echo ""
+  } >> "$LOG_FILE"
+
+  # Get complete response at once
   RESPONSE=$(jq -n \
     --arg prompt "$PROMPT" \
     '{
       model: "gemma3:latest",
-      prompt: ("You are an English language tutor. The user wrote the following message (it could be in English, Korean, or mixed). Provide concise feedback on how to express this more naturally in English:\n\n" + $prompt + "\n\nProvide:\n1. Grammar corrections (if any)\n2. More natural/professional alternative expressions\n3. Brief explanation (keep it concise)"),
+      prompt: ("You are an English language tutor.\n\nContext: The user writes prompts for AI coding assistants (like Claude Code).\nGoal: Help them express ideas more clearly and naturally in English.\n\nUser'\''s message (Korean/English/mixed):\n\"\"\"\n" + $prompt + "\n\"\"\"\n\nProvide CONCISE feedback:\n\nIF the message is already clear, natural English:\n✓ Already clear and well-expressed.\n\nIF it needs improvement:\n→ [Better, clearer English expression]\n\n💡 [One-line tip]\n\nFORMAT EXAMPLE:\n→ \"Your improved sentence here.\"\n\n💡 Keep it simple and direct.\n\nRULES:\n- Output in English only\n- ALWAYS add a blank line before 💡\n- Keep it under 3 lines total (including blank line)\n- NO extra questions or meta-commentary\n- Don'\''t force feedback if the message is already good"),
       stream: false
-    }' | curl -s http://localhost:11434/api/generate -d @- 2>/dev/null)
+    }' | curl -s http://localhost:11434/api/generate -d @- 2>/dev/null | \
+    jq -r '.response // empty')
 
-  # Extract feedback response
-  FEEDBACK=$(echo "$RESPONSE" | jq -r '.response // "Error: No response from Ollama"')
+  # Write response to log
+  echo "$RESPONSE" >> "$LOG_FILE"
 
-  # Append to today's log file
+  # Write log footer
   {
-    echo "## $(date +%H:%M:%S) - Original Prompt"
     echo ""
-    echo '```'
-    echo "$PROMPT"
-    echo '```'
-    echo ""
-    echo "### Feedback"
-    echo ""
-    echo "$FEEDBACK"
     echo ""
     echo "---"
     echo ""
