@@ -17,6 +17,11 @@ if [ -z "$PROMPT" ]; then
   exit 0
 fi
 
+# Skip Claude Code commands (e.g., /commit, /clear, /compact)
+if [[ "$PROMPT" == /* ]]; then
+  exit 0
+fi
+
 # Get project directory
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 
