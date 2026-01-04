@@ -4,13 +4,13 @@ This directory contains custom hooks for Claude Code that enhance the developmen
 
 ## Available Hooks
 
-### 1. user-prompt-submit.sh
+### 1. feedback-english.sh
 **Event**: `UserPromptSubmit`
 **Description**: Provides English writing feedback when submitting prompts in Korean
 **Features**:
 - Skips Claude Code commands (e.g., `/commit`, `/clear`)
-- Uses `mcp-english-teacher` to provide natural English suggestions
-- Shows non-blocking notifications with original and suggested versions
+- Uses Ollama (gemma3) for natural English suggestions
+- Logs prompts and feedback to daily markdown files in `.claude/logs/`
 
 ### 2. notification-task-completed.sh
 **Event**: `Stop`
@@ -45,7 +45,7 @@ To deploy these hooks to the Claude Code marketplace:
 
 ## Platform Compatibility
 
-- **user-prompt-submit.sh**: Requires `mcp-english-teacher` MCP server
+- **feedback-english.sh**: Requires Ollama with gemma3 model
 - **notification-task-completed.sh**: macOS only (uses `osascript`)
 - **notification-permission.sh**: macOS only (uses `osascript`)
 

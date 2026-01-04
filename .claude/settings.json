@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/user-prompt-submit.sh"
+            "command": ".claude/hooks/feedback-english.sh"
           }
         ]
       }
