@@ -12,14 +12,14 @@ This directory contains custom hooks for Claude Code that enhance the developmen
 - Uses `mcp-english-teacher` to provide natural English suggestions
 - Shows non-blocking notifications with original and suggested versions
 
-### 2. task-completed-notification.sh
+### 2. notification-task-completed.sh
 **Event**: `Stop`
 **Description**: Shows a macOS notification when Claude Code completes a task
 **Features**:
 - Native macOS notification with "Glass" sound effect
 - Helps you stay aware of task completion when working in other windows
 
-### 3. permission-notification.sh
+### 3. notification-permission.sh
 **Event**: `Notification` (matcher: `permission_prompt`)
 **Description**: Shows a macOS notification when Claude Code needs permission
 **Features**:
@@ -46,8 +46,8 @@ To deploy these hooks to the Claude Code marketplace:
 ## Platform Compatibility
 
 - **user-prompt-submit.sh**: Requires `mcp-english-teacher` MCP server
-- **task-completed-notification.sh**: macOS only (uses `osascript`)
-- **permission-notification.sh**: macOS only (uses `osascript`)
+- **notification-task-completed.sh**: macOS only (uses `osascript`)
+- **notification-permission.sh**: macOS only (uses `osascript`)
 
 ## Customization
 

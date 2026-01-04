@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/task-completed-notification.sh"
+            "command": ".claude/hooks/notification-task-completed.sh"
           }
         ]
       }
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/permission-notification.sh"
+            "command": ".claude/hooks/notification-permission.sh"
           }
         ]
       }
