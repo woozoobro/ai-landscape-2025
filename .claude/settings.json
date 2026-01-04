@@ -34,15 +34,6 @@
             "command": "osascript -e 'display notification \"Permission needed\" with title \"Claude Code\" sound name \"Ping\"'"
           }
         ]
-      },
-      {
-        "matcher": "idle_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e 'display notification \"Waiting for input\" with title \"Claude Code\" sound name \"Ping\"'"
-          }
-        ]
       }
     ]
   }
